@@ -4,20 +4,23 @@ This document contains the sequential prompts designed for Google Stitch to gene
 
 ---
 
-## 1. The Landing / Login Page (Start Here)
-*This establishes the core brand identity, typography, and color palette.*
+## 1. The Global Layout & Dashboard Overview (Start Here)
+*This establishes the core brand identity, navigation structure, and color palette.*
 
 **Stitch Prompt:**
 > Create a modern, trustworthy fintech web application called "DebtFlow". The design should be clean, using a white/light gray background with a primary accent color of deep blue or emerald green.
->
-> Design a full-screen Landing/Login page. The layout should be split into two columns:
-> - **Left Column (Branding):** A beautifully designed section with a headline "Pay off debt faster with a smarter repayment plan." Include a subtle graphic or illustration representing financial growth or debt reduction.
-> - **Right Column (Auth):** A clean authentication card centered on the screen. It should have the title "Sign in to save your plan", a descriptive text "Enter your email to receive a secure one-time code", an email input field, and a primary "Send OTP" button.
+> 
+> **Structure:** A persistent left sidebar with navigation links: Overview (active state), Accounts, Strategies, Budget, Forgiveness, Refinance, and Settings at the bottom. A top header showing the user's avatar and a notification bell.
+> 
+> **Main Content Area (Overview):** 
+> 1. A top summary strip with three large metric cards: "Total Debt Balance", "Monthly Minimums", and "Projected Debt-Free Date".
+> 2. Below that, a large interactive area chart showing projected debt reduction over time.
+> 3. A right-side column or bottom section showing a "Recent Activity" feed (e.g., "Automated payment made to Navient"). 
 
 ---
 
 ## 2. The Onboarding Flow (First Time Users)
-*This follows immediately after a successful login for a new user.*
+*This is the data entry flow after a new user registers.*
 
 **Stitch Prompt:**
 > Using the established DebtFlow design system, design a distraction-free onboarding screen. Hide any sidebar navigation.
@@ -32,22 +35,7 @@ This document contains the sequential prompts designed for Google Stitch to gene
 
 ---
 
-## 3. The Global Layout & Dashboard Overview (The Hub)
-*Once onboarded, the user lands here. This sets up the navigation structure.*
-
-**Stitch Prompt:**
-> Using the DebtFlow design system, create the main authenticated Dashboard Layout.
-> 
-> **Structure:** A persistent left sidebar with navigation links: Overview (active state), Accounts, Strategies, Budget, Forgiveness, Refinance, and Settings at the bottom. A top header showing the user's avatar and a notification bell.
-> 
-> **Main Content Area (Overview):** 
-> 1. A top summary strip with three large metric cards: "Total Debt Balance", "Monthly Minimums", and "Projected Debt-Free Date".
-> 2. Below that, a large interactive area chart showing projected debt reduction over time.
-> 3. A right-side column or bottom section showing a "Recent Activity" feed (e.g., "Automated payment made to Navient"). 
-
----
-
-## 4. Debt Accounts List & Detail View
+## 3. Debt Accounts List & Detail View
 *Managing the actual debt records.*
 
 **Stitch Prompt:**
@@ -61,7 +49,7 @@ This document contains the sequential prompts designed for Google Stitch to gene
 
 ---
 
-## 5. Strategy Builder (Snowball vs Avalanche)
+## 4. Strategy Builder (Snowball vs Avalanche)
 *The core optimization engine of the app.*
 
 **Stitch Prompt:**
@@ -78,7 +66,7 @@ This document contains the sequential prompts designed for Google Stitch to gene
 
 ---
 
-## 6. Student Loan Forgiveness Analyzer
+## 5. Student Loan Forgiveness Analyzer
 *A major differentiating feature from the blueprint.*
 
 **Stitch Prompt:**

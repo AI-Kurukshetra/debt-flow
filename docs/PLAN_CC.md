@@ -2,6 +2,17 @@
 
 **Context**: Move the DebtFlow app from a Next.js starter pack state to a working debt optimization platform, implementing docs/PLAN.md phase by phase while preserving current working pieces (OTP auth, CSS Modules, Supabase helpers, typed schema).
 
+## Implementation Status
+
+- **Phase 0 (Auth & Schema)**: ✅ Complete
+  - Custom username/password auth implemented (login, register, refresh, session, signout routes + /login + /register pages)
+  - 3 migrations applied (init, debtflow_schema, custom auth routes)
+  - Supabase types auto-generated
+
+- **Phase 1 (Middleware, Dashboard Layout, Shared UI)**: ❌ Not started
+- **Phase 2 (Profile Trigger, Profile API)**: ❌ Not started
+- **Phase 3–6 (API Routes, Domain Pages, Polish)**: ❌ Not started
+
 ---
 
 ## Gap Analysis Summary
@@ -9,7 +20,7 @@
 | Area | Plan.md Requires | Current State | Action |
 |---|---|---|---|
 | Styling | Tailwind | CSS Modules | Keep CSS Modules — no migration |
-| Auth | register/login/logout/refresh routes | OTP (request-otp, verify-otp, signout) | OTP covers both — keep as-is |
+| Auth | register/login/logout/refresh routes | **DONE** — custom password auth implemented (login, register, refresh, session, signout routes + /login + /register pages) | No action needed |
 | Middleware | Auth guard on /dashboard/* | None | **Create** |
 | Dashboard data | Real debt_accounts + strategies | projects/project_updates demo data | **Rewrite** |
 | Domain API routes | ~15 route groups | None | **Create all** |
@@ -92,7 +103,9 @@
 
 ## Key Patterns to Reuse
 
-- **Server Supabase client**: `await createServerSupabaseClient()` from `src/lib/supabase/server.ts` — replicate cookie wiring in `src/middleware.ts`
+- **Server Supabase clients**:
+  - `await createServerSupabaseClient()` from `src/lib/supabase/server.ts` — replicate cookie wiring in `src/middleware.ts` (SSR-aware, session-based)
+  - `createAdminSupabaseClient()` from `src/lib/supabase/admin.ts` — used by custom auth routes for server-side operations (service role key)
 - **API route shape**: Follow `src/app/api/auth/request-otp/route.ts` — `NextResponse.json({ data } | { error })`, always check auth first
 - **Types**: All table access imports `Database` from `src/types/database.ts` — use `Database["public"]["Tables"]["debt_accounts"]["Row"]` etc.
 - **CSS Modules**: All new pages co-locate `page.module.css`; components co-locate `<name>.module.css`. CSS custom properties from `globals.css` (`--accent`, `--card`, `--border`, `--muted`, etc.)
@@ -102,13 +115,13 @@
 
 ## Unchanged Files (Keep As-Is)
 
-- `src/lib/supabase/server.ts`, `src/lib/supabase/client.ts`
+- `src/lib/supabase/server.ts`, `src/lib/supabase/client.ts`, `src/lib/supabase/admin.ts`
 - `src/types/database.ts`
-- `src/components/auth/otp-form.tsx`
-- `src/app/api/auth/request-otp/`, `verify-otp/`, `signout/`
 - `supabase/migrations/20260312000000_init.sql`, `20260314120000_debtflow_schema.sql`
 - `supabase/seed.sql`
 - `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`
+
+**Note on Auth Migration**: OTP files (`src/components/auth/otp-form.tsx`, `src/app/api/auth/request-otp/`, `verify-otp/`, `signout/`) still exist in the repo but are legacy. The primary auth path is now custom username/password auth with login/register pages. Do not remove OTP files (may be useful as reference), but focus new auth features on custom auth routes.
 
 ---
 

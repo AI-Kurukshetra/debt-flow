@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/app`: App Router pages and route handlers. The starter landing page is `src/app/page.tsx`; authenticated product entrypoints include `src/app/login/page.tsx`, `src/app/register/page.tsx`, and `src/app/dashboard/page.tsx`; auth endpoints live under `src/app/api/auth/*`.
+- `src/app`: App Router pages and route handlers. The root route `src/app/page.tsx` now acts as an auth-aware redirect entrypoint; visible product entrypoints include `src/app/login/page.tsx`, `src/app/register/page.tsx`, and `src/app/dashboard/page.tsx`; auth endpoints live under `src/app/api/auth/*`.
 - `src/components`: client-side UI for both auth paths, including `src/components/auth/otp-form.tsx` and `src/components/auth/password-auth-form.tsx`.
 - `src/lib/supabase`: browser, server, and admin Supabase helpers. The server helper is async and must be awaited in server components and route handlers.
 - `src/lib/auth`: custom username/password session logic layered on top of the Supabase-backed app.
@@ -20,7 +20,7 @@
 - `npm run db:status`: inspects Supabase local status; `npm run db:reset` re-applies migrations + seed via CLI against the local Supabase stack.
 - `npx supabase db push --include-all`: pushes pending migrations to the linked remote Supabase project when working against hosted infrastructure.
 - `npx supabase projects api-keys --project-ref <ref> -o env`: convenient way to refresh local Supabase env values when CLI access is available.
-- `./start_server.sh`: ensures `cloudflared` is installed, starts the app on port `3000`, and prints a temporary public `trycloudflare.com` URL.
+- `./start_server.sh`: ensures `cloudflared` is installed, starts the app on port `3000`, and prints login-first local/public URLs that point to `/login`.
 
 ## Coding Style & Naming Conventions
 - Source files use 2-space indentation, TypeScript with strict mode, and Next.js App Router conventions (`page.tsx`, `layout.tsx`).
@@ -29,10 +29,14 @@
 - Route-local styles should follow the actual file on disk (`page.module.css` beside the route file); keep imports aligned with filenames.
 - Server-side Supabase access must use `await createServerSupabaseClient()`; do not treat the helper as synchronous.
 - Public demo reads in the dashboard are intentionally separated from authenticated reads; preserve that distinction when changing dashboard queries or access behavior.
+- The default browser entry is now login-first:
+  - `/` redirects unauthenticated users to `/login`
+  - `/` redirects authenticated users to `/dashboard`
+  - sign-out returns to `/login`
 - The app currently supports two auth tracks during transition:
   - OTP via Supabase Auth route handlers
   - custom username/password auth via `src/lib/auth/custom.ts` and the `/api/auth/login|register|refresh|session` routes
-- Prefer extending the current starter-pack app incrementally. Do not remove the landing page, demo dashboard path, or OTP flow unless the task explicitly includes that migration.
+- Prefer extending the current starter-pack app incrementally. Preserve the login-first root redirect, the demo dashboard path, and the OTP flow unless the task explicitly includes changing that migration state.
 - Use `src/lib/supabase/admin.ts` only for service-role or backend-only operations; never import it into client components.
 - Keep custom-auth session handling cookie-based and server-owned; do not move password or token logic into the browser.
 - Pre-commit formatting follows ESLint and TypeScript defaults; run `npm run lint`/`typecheck` before PRs.
