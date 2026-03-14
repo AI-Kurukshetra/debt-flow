@@ -1,3 +1,7 @@
+# DebtFlow
+
+AI-powered debt optimization and financial freedom platform.
+
 # Deployment Guidelines
 
 ## Pre-deploy checklist

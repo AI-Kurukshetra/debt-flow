@@ -50,11 +50,11 @@ export default async function DashboardPage() {
       <section className={styles.header}>
         <div>
           <p className={styles.kicker}>{user ? "Authenticated Workspace" : "Demo Workspace"}</p>
-          <h1>Hackathon Dashboard</h1>
+          <h1>DebtFlow Dashboard</h1>
           <p>
             {user
               ? `Welcome ${user.email}`
-              : "Browsing public demo data. Sign in from the landing page for a personal session."}
+              : "Browsing public demo data. Sign in from the landing page to save a personal repayment workspace."}
           </p>
         </div>
         {user ? (
@@ -72,7 +72,7 @@ export default async function DashboardPage() {
 
       {!user ? (
         <section className={styles.demoBanner}>
-          <p>This dashboard is visible in demo mode for anonymous visitors. Interactive or user-specific actions still require sign-in.</p>
+          <p>This dashboard is visible in demo mode for anonymous visitors. Personalized actions and private debt plans still require sign-in.</p>
         </section>
       ) : null}
 
@@ -124,9 +124,13 @@ export default async function DashboardPage() {
 
       <section className={styles.nextSteps}>
         <h2>Next Step</h2>
-        <p>{user ? "Swap this dashboard with your feature set and wire your first product definition." : "Use this demo view for sharing, then sign in to validate the auth-backed flow."}</p>
+        <p>
+          {user
+            ? "Use this workspace as the foundation for payoff strategies, loan tracking, and repayment insights."
+            : "Use this demo view for sharing, then sign in to unlock a personal DebtFlow workspace."}
+        </p>
         <Link href="/" className={styles.link}>
-          Return to landing
+          Return to home
         </Link>
       </section>
     </main>

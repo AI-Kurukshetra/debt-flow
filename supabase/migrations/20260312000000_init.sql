@@ -1,7 +1,17 @@
 create extension if not exists "uuid-ossp";
 create extension if not exists "pgcrypto";
 
-create type if not exists public.project_status as enum ('Idea', 'Building', 'Launched');
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_type
+    where typnamespace = 'public'::regnamespace
+      and typname = 'project_status'
+  ) then
+    create type public.project_status as enum ('Idea', 'Building', 'Launched');
+  end if;
+end $$;
 
 create table if not exists public.profiles (
   id uuid primary key,

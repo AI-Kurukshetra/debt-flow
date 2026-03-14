@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hackathon Starter — Next.js + Supabase + Vercel",
-  description: "Production-ready starter environment for hackathon builds.",
+  title: "DebtFlow — AI-Powered Debt Optimization",
+  description: "Debt optimization and financial freedom planning powered by Next.js and Supabase.",
 };
 
 export default function RootLayout({

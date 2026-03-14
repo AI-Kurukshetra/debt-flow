@@ -2,22 +2,29 @@ import Link from "next/link";
 import OtpForm from "@/components/auth/otp-form";
 import styles from "./page.module.css";
 
-export default function Home({ searchParams }: { searchParams?: { needSignIn?: string } }) {
+type HomeProps = {
+  searchParams?: Promise<{ needSignIn?: string }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
-        <span className={styles.badge}>Hackathon Base Environment</span>
-        <h1>Launch quickly with Next.js, Supabase, and Vercel</h1>
+        <span className={styles.badge}>DebtFlow</span>
+        <h1>Pay off debt faster with a smarter repayment plan</h1>
         <p>
-          This starter gives you authenticated sessions, seeded demo data, and a dashboard shell so you can
-          focus on your idea inside 10 hours.
+          DebtFlow helps borrowers compare payoff strategies, stay on top of balances, and turn debt reduction
+          into a clear path toward financial freedom.
         </p>
         <p className={styles.subtle}>
-          Mandatory stack for the event: Next.js App Router + Supabase + Vercel, delivered with a practical base.
+          Explore the dashboard to preview repayment planning workflows, progress tracking, and a sharable demo
+          experience powered by Next.js, Supabase, and Vercel.
         </p>
         <div className={styles.ctaRow}>
           <Link href="/dashboard" className={styles.primaryButton}>
-            Open Dashboard
+            Open DebtFlow
           </Link>
           <a
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template"
@@ -25,14 +32,14 @@ export default function Home({ searchParams }: { searchParams?: { needSignIn?: s
             rel="noopener noreferrer"
             className={styles.secondaryButton}
           >
-            Vercel Template
+            Deploy to Vercel
           </a>
         </div>
       </section>
       <section className={styles.card}>
-        <h2>Sign in to continue</h2>
-        {searchParams?.needSignIn ? (
-          <p className={styles.status}>Sign in required to open dashboard.</p>
+        <h2>Sign in to save your plan</h2>
+        {resolvedSearchParams?.needSignIn ? (
+          <p className={styles.status}>Sign in required to open your private dashboard.</p>
         ) : null}
         <OtpForm />
       </section>
