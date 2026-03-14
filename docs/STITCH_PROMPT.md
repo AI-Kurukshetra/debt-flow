@@ -127,3 +127,32 @@ This document contains the sequential prompts designed for Google Stitch to gene
 > 1. A clean "Upcoming Payments" list showing the next 30 days of scheduled transfers, each with a toggle for "Autopay Status".
 > 2. A "Payment History" table with columns: Date, Account, Amount, and a "Split View" showing how much went to Principal vs. Interest.
 > 3. A visual "Payment Streaks" gamification component at the top (e.g., "6 Month On-Time Streak!").
+
+---
+
+## UPDATE - V2: Interaction Design & Final Gaps
+*Addressing onboarding steps, manual interactions, and celebration states.*
+
+**Prompt 12: Onboarding Steps 2 & 3 (Strategy & Budget)**
+> Design the final steps of the DebtFlow onboarding flow.
+> 
+> **Step 2 of 3 (Choose Strategy):** Show three large vertical cards for "Debt Snowball", "Debt Avalanche", and "Custom Plan". Each card should have a clear explanation, a "Speed to Payoff" metric, and a "Recommended" badge for Avalanche.
+> 
+> **Step 3 of 3 (Set Budget):** An interface titled "Set your monthly target". Include a large currency input for "Target Monthly Debt Payment" and a live chart showing how different budget levels impact their "Debt-Free Date". Include a "Finish Setup" primary button.
+
+**Prompt 13: Manual Strategy Reordering (Drag-and-Drop)**
+> Design the "Custom Strategy" view. 
+> Provide a vertical list of debt accounts with visible drag-and-drop handles. As accounts are reordered, show a "Live Recalculating" feedback indicator and update the "Total Interest Paid" stat dynamically.
+
+**Prompt 14: Milestone & Debt-Free Celebration UI**
+> Design a "Debt-Free Celebration" overlay. 
+> This should be a full-screen semi-transparent modal with a confetti animation effect. Include a "Congratulations!" message, a summary of total interest saved, and a primary action button to "Set Your Next Financial Goal".
+
+**Prompt 15: Bank Integration Flow (Plaid)**
+> Design the "Connect Bank Accounts" modal. 
+> Include a grid of major bank logos (Chase, Wells Fargo, etc.), a search bar, and a "Powered by Plaid" security badge. Show a success state where 3 accounts are linked with their current balances.
+
+**Prompt 16: Refinement Modals (Add/Edit Forms)**
+> Design consistent modal dialogs for "Add New Account" and "Edit Transaction". 
+> - **Add Account:** A clean form with sections for Loan Details, Interest, and Due Date. 
+> - **Edit Transaction:** A smaller modal focusing on Category selection (dropdown with icons), Date, and Amount.
