@@ -1,165 +1,76 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-import styles from "./page.module.css";
-import { getCurrentCustomUser } from "@/lib/auth/custom";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/database";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
+import styles from "./page.module.css";
 
-type ProjectRow = {
+type Account = {
   id: string;
-  title: string;
-  status: string;
-  progress: number;
-  owner_name: string | null;
-  description: string | null;
-  is_demo: boolean | null;
-};
-
-type ActivityRow = {
-  id: string;
-  event: string;
-  created_at: string;
-  project_id: string;
-  projects?: { title: string } | null;
+  account_name: string;
+  current_balance: number;
+  minimum_payment: number;
+  interest_rate: number;
 };
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
-  const customUser = await getCurrentCustomUser();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const activeUser = customUser ?? (user ? { email: user.email ?? "Signed in", auth_type: "supabase" } : null);
-  const readClient = user ? supabase : createDemoReadClient();
+  let accounts: Account[] = [];
 
-  const { data: projects, error: projectsError } = await readClient
-    .from("projects")
-    .select("id, title, status, progress, owner_name, description, is_demo")
-    .eq("is_demo", true)
-    .order("updated_at", { ascending: false })
-    .limit(6);
+  if (user) {
+    const { data } = await supabase
+      .from("debt_accounts")
+      .select("id, account_name, current_balance, minimum_payment, interest_rate")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .order("current_balance", { ascending: false });
+    accounts = (data as Account[]) ?? [];
+  } else {
+    const adminClient = createAdminSupabaseClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (adminClient.from("debt_accounts") as any)
+      .select("*")
+      .eq("is_demo", true)
+      .limit(10);
+    accounts = (data as Account[]) ?? [];
+  }
 
-  const { data: activity, error: activityError } = await readClient
-    .from("project_updates")
-    .select("id, event, created_at, project_id, projects!inner(title, is_demo)")
-    .eq("projects.is_demo", true)
-    .order("created_at", { ascending: false })
-    .limit(6);
+  const totalDebt = accounts.reduce((sum, a) => sum + (a.current_balance ?? 0), 0);
+  const totalMinPayment = accounts.reduce((sum, a) => sum + (a.minimum_payment ?? 0), 0);
+  const accountCount = accounts.length;
 
   return (
-    <main className={styles.page}>
-      <section className={styles.header}>
-        <div>
-          <p className={styles.kicker}>{activeUser ? "Authenticated Workspace" : "Demo Workspace"}</p>
-          <h1>DebtFlow Dashboard</h1>
-          <p>
-            {activeUser
-              ? `Welcome ${activeUser.email}${customUser?.username ? ` (${customUser.username})` : ""}`
-              : "Browsing public demo data. Sign in from the landing page to save a personal repayment workspace."}
-          </p>
+    <div className={styles.page}>
+      {!user && (
+        <div className={styles.demoBanner}>
+          <p>Demo mode — sign in to access your personal workspace.</p>
         </div>
-        {activeUser ? (
-          <form action="/api/auth/signout" method="post">
-            <button className={styles.signOut} type="submit">
-              Sign Out
-            </button>
-          </form>
-        ) : (
-          <Link href="/login" className={styles.signInLink}>
-            Sign In
-          </Link>
-        )}
-      </section>
-
-      {!activeUser ? (
-        <section className={styles.demoBanner}>
-          <p>This dashboard is visible in demo mode for anonymous visitors. Personalized actions and private debt plans still require sign-in.</p>
-        </section>
-      ) : null}
-
-      <section className={styles.grid}>
-        <article className={styles.card}>
-          <h2>Projects</h2>
-          {projectsError ? (
-            <p className={styles.error}>{projectsError.message}</p>
-          ) : projects?.length ? (
-            <ul className={styles.list}>
-              {(projects as ProjectRow[]).map((project) => (
-                <li key={project.id} className={styles.item}>
-                  <p className={styles.itemTitle}>{project.title}</p>
-                  <p>{project.description || "No description."}</p>
-                  <div className={styles.meta}>
-                    <span>{project.status}</span>
-                    <span>{project.progress}%</span>
-                    <span>{project.owner_name || "Guest"}{project.is_demo ? " · Demo" : ""}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No records. Seed data should show by default.</p>
-          )}
-        </article>
-
-        <article className={styles.card}>
-          <h2>Activity Feed</h2>
-          {activityError ? (
-            <p className={styles.error}>{activityError.message}</p>
-          ) : activity?.length ? (
-            <ul className={styles.list}>
-              {(activity as ActivityRow[]).map((event) => (
-                <li key={event.id} className={styles.activityItem}>
-                  <p>{event.event}</p>
-                  <p className={styles.activityMeta}>
-                    {getProjectTitle(event.projects) || "Unknown workspace"} ·{" "}
-                    {new Date(event.created_at).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No recent activity.</p>
-          )}
-        </article>
-      </section>
-
-      <section className={styles.nextSteps}>
-        <h2>Next Step</h2>
-        <p>
-          {activeUser
-            ? "Use this workspace as the foundation for payoff strategies, loan tracking, and repayment insights."
-            : "Use this demo view for sharing, then sign in to unlock a personal DebtFlow workspace."}
-        </p>
-        <Link href="/login" className={styles.link}>
-          Go to login
-        </Link>
-      </section>
-    </main>
+      )}
+      <h1>Overview</h1>
+      <div className={styles.strip}>
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Total Debt</span>
+          <span className={styles.statValue}>${totalDebt.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+        </div>
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Monthly Minimum</span>
+          <span className={styles.statValue}>${totalMinPayment.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+        </div>
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Accounts</span>
+          <span className={styles.statValue}>{accountCount}</span>
+        </div>
+      </div>
+      <div className={styles.accountGrid}>
+        {accounts.map((account) => (
+          <div key={account.id} className={styles.accountCard}>
+            <p className={styles.accountName}>{account.account_name}</p>
+            <p className={styles.accountBalance}>${account.current_balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+            <p className={styles.accountRate}>{account.interest_rate}% APR</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
-}
-
-function createDemoReadClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceRoleKey) {
-    redirect("/login?needSignIn=1");
-  }
-
-  return createClient<Database>(url, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
-function getProjectTitle(projects: ActivityRow["projects"]) {
-  if (!projects) {
-    return null;
-  }
-
-  return Array.isArray(projects) ? projects[0]?.title ?? null : projects.title;
 }
