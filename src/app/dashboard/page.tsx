@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import styles from "./page.module.css";
+import { getCurrentCustomUser } from "@/lib/auth/custom";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -25,10 +26,12 @@ type ActivityRow = {
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
+  const customUser = await getCurrentCustomUser();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const activeUser = customUser ?? (user ? { email: user.email ?? "Signed in", auth_type: "supabase" } : null);
   const readClient = user ? supabase : createDemoReadClient();
 
   const { data: projects, error: projectsError } = await readClient
@@ -49,15 +52,15 @@ export default async function DashboardPage() {
     <main className={styles.page}>
       <section className={styles.header}>
         <div>
-          <p className={styles.kicker}>{user ? "Authenticated Workspace" : "Demo Workspace"}</p>
+          <p className={styles.kicker}>{activeUser ? "Authenticated Workspace" : "Demo Workspace"}</p>
           <h1>DebtFlow Dashboard</h1>
           <p>
-            {user
-              ? `Welcome ${user.email}`
+            {activeUser
+              ? `Welcome ${activeUser.email}${customUser?.username ? ` (${customUser.username})` : ""}`
               : "Browsing public demo data. Sign in from the landing page to save a personal repayment workspace."}
           </p>
         </div>
-        {user ? (
+        {activeUser ? (
           <form action="/api/auth/signout" method="post">
             <button className={styles.signOut} type="submit">
               Sign Out
@@ -70,7 +73,7 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {!user ? (
+      {!activeUser ? (
         <section className={styles.demoBanner}>
           <p>This dashboard is visible in demo mode for anonymous visitors. Personalized actions and private debt plans still require sign-in.</p>
         </section>
@@ -125,7 +128,7 @@ export default async function DashboardPage() {
       <section className={styles.nextSteps}>
         <h2>Next Step</h2>
         <p>
-          {user
+          {activeUser
             ? "Use this workspace as the foundation for payoff strategies, loan tracking, and repayment insights."
             : "Use this demo view for sharing, then sign in to unlock a personal DebtFlow workspace."}
         </p>

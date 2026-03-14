@@ -26,14 +26,9 @@ export default async function Home({ searchParams }: HomeProps) {
           <Link href="/dashboard" className={styles.primaryButton}>
             Open DebtFlow
           </Link>
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondaryButton}
-          >
-            Deploy to Vercel
-          </a>
+          <Link href="/login" className={styles.secondaryButton}>
+            Username Login
+          </Link>
         </div>
       </section>
       <section className={styles.card}>
@@ -41,6 +36,10 @@ export default async function Home({ searchParams }: HomeProps) {
         {resolvedSearchParams?.needSignIn ? (
           <p className={styles.status}>Sign in required to open your private dashboard.</p>
         ) : null}
+        <p className={styles.subtle}>
+          Starter-pack OTP auth is still available below. The new username/password flow lives at{" "}
+          <Link href="/login">/login</Link> and <Link href="/register">/register</Link>.
+        </p>
         <OtpForm />
       </section>
     </main>
