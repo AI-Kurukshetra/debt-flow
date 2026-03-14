@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./password-auth-form.module.css";
 
@@ -13,7 +14,6 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
   const [identifier, setIdentifier] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +31,6 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
             username: username.trim().toLowerCase(),
             email: email.trim().toLowerCase(),
             password,
-            fullName: fullName.trim(),
           };
 
     const response = await fetch(endpoint, {
@@ -54,19 +53,14 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
 
   return (
     <form onSubmit={submit} className={styles.form}>
+      <p className={styles.intro}>
+        {mode === "login"
+          ? "Use your DebtFlow username or email to continue to your workspace."
+          : "Create your DebtFlow account in seconds. You can complete the rest of your profile after sign up."}
+      </p>
+
       {mode === "register" ? (
         <>
-          <label className={styles.label} htmlFor="fullName">
-            Full name
-          </label>
-          <input
-            id="fullName"
-            className={styles.input}
-            value={fullName}
-            onChange={(event) => setFullName(event.target.value)}
-            disabled={loading}
-          />
-
           <label className={styles.label} htmlFor="username">
             Username
           </label>
@@ -76,6 +70,7 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             disabled={loading}
+            autoComplete="username"
             required
           />
 
@@ -89,6 +84,7 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             disabled={loading}
+            autoComplete="email"
             required
           />
         </>
@@ -103,6 +99,7 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
             value={identifier}
             onChange={(event) => setIdentifier(event.target.value)}
             disabled={loading}
+            autoComplete="username"
             required
           />
         </>
@@ -118,6 +115,7 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
         value={password}
         onChange={(event) => setPassword(event.target.value)}
         disabled={loading}
+        autoComplete={mode === "login" ? "current-password" : "new-password"}
         minLength={8}
         required
       />
@@ -127,6 +125,13 @@ export default function PasswordAuthForm({ mode }: PasswordAuthFormProps) {
       </button>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+
+      <p className={styles.footer}>
+        {mode === "login" ? "New to DebtFlow?" : "Already have an account?"}{" "}
+        <Link href={mode === "login" ? "/register" : "/login"} className={styles.link}>
+          {mode === "login" ? "Create an account" : "Sign in"}
+        </Link>
+      </p>
     </form>
   );
 }

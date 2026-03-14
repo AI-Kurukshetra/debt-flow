@@ -5,25 +5,40 @@ import styles from "../page.module.css";
 export default function RegisterPage() {
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <span className={styles.badge}>DebtFlow Register</span>
-        <h1>Create a username/password account</h1>
-        <p>
-          Register a custom DebtFlow account to test the planned username/password flow while the starter app
-          continues to support OTP sign-in.
-        </p>
-        <div className={styles.ctaRow}>
-          <Link href="/login" className={styles.primaryButton}>
-            Existing user login
-          </Link>
-          <Link href="/" className={styles.secondaryButton}>
-            Back to home
-          </Link>
+      <section className={styles.heroPanel}>
+        <div className={styles.hero}>
+          <span className={styles.badge}>Create Account</span>
+          <h1>Start your DebtFlow workspace</h1>
+          <p>
+            Create your account to begin tracking debt accounts, payment strategies, and your next financial
+            milestones.
+          </p>
+          <div className={styles.ctaRow}>
+            <Link href="/login" className={styles.primaryButton}>
+              Already have an account
+            </Link>
+            <Link href="/" className={styles.secondaryButton}>
+              Back to home
+            </Link>
+          </div>
         </div>
+
+        <section className={styles.insightCard}>
+          <p className={styles.statLabel}>Signup takes</p>
+          <strong className={styles.authHeading}>Username, email, password</strong>
+          <p className={styles.subtle}>
+            We keep the first step intentionally light so profile and debt details can be completed after account
+            creation.
+          </p>
+        </section>
       </section>
-      <section className={styles.card}>
-        <h2>Register</h2>
-        <PasswordAuthForm mode="register" />
+
+      <section className={styles.authPanel}>
+        <section className={styles.card}>
+          <span className={styles.badge}>Sign Up</span>
+          <h2>Create your DebtFlow account</h2>
+          <PasswordAuthForm mode="register" />
+        </section>
       </section>
     </main>
   );

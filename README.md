@@ -45,3 +45,7 @@ AI-powered debt optimization and financial freedom platform.
 ## Optional steps
 - For repeatable builds, document your Supabase project ref and API key rotation schedule in this README or a companion note.
 - Keep `.env.local` out of version control; commit only `.env.example`.
+
+## Dev seed credentials added:
+  - rajiv_demo / rajiv_demo@debtflow.dev / DevPass123!
+  - maya_demo / maya_demo@debtflow.dev / DevPass123!
