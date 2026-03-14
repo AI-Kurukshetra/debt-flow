@@ -21,12 +21,12 @@ export default async function BudgetPage({
     .eq("user_id", user.id)
     .eq("budget_month", `${month}-01`);
 
-  // Fetch transactions for the selected month
+  // Fetch budget transactions for the selected month
   const startDate = `${month}-01`;
   const endDate = new Date(new Date(startDate).getFullYear(), new Date(startDate).getMonth() + 1, 0).toISOString().split('T')[0];
 
   const { data: transactions } = await supabase
-    .from("transactions")
+    .from("budget_transactions")
     .select("*")
     .eq("user_id", user.id)
     .gte("transaction_date", startDate)

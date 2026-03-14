@@ -52,11 +52,18 @@ export function BudgetManager({
   }));
 
   const handleAddTransaction = async (data: Partial<Transaction>) => {
+    // Strip category_id if it's a default placeholder (not a real DB row)
+    const realCategoryIds = new Set(categories.map((c) => c.id));
+    const payload: Partial<Transaction> & { transaction_type?: string } = { ...data };
+    if (payload.category_id && !realCategoryIds.has(payload.category_id)) {
+      delete payload.category_id;
+    }
+    delete payload.transaction_type;
     try {
-      const res = await fetch("/api/transactions", {
+      const res = await fetch("/api/budget-transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         const json = await res.json();
