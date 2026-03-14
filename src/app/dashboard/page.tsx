@@ -5,6 +5,7 @@ import type { Database } from "@/types/database";
 import { DebtProjectionChart } from "@/components/dashboard/debt-projection-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { ExportReportBtn } from "@/components/dashboard/export-report-btn";
+import { NewPaymentButton } from "@/components/payments/new-payment-button";
 
 type DebtAccount = Database["public"]["Tables"]["debt_accounts"]["Row"];
 
@@ -67,7 +68,7 @@ export default async function DashboardPage() {
         <h1>Dashboard Overview</h1>
         <div className={styles.actions}>
           <ExportReportBtn />
-          <button className={styles.primaryButton}>+ New Payment</button>
+          <NewPaymentButton accounts={accounts.map(a => ({ id: a.id, account_name: a.account_name }))} />
         </div>
       </div>
 

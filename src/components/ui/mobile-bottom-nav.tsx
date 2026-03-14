@@ -31,6 +31,12 @@ export function MobileBottomNav() {
           </Link>
         );
       })}
+      <form action="/api/auth/signout" method="post" className={styles.logoutForm}>
+        <button type="submit" className={styles.item}>
+          <span className={styles.icon}>↩</span>
+          <span className={styles.label}>Logout</span>
+        </button>
+      </form>
     </nav>
   );
 }

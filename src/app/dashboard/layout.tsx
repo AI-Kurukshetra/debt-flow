@@ -29,6 +29,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <span className={styles.proLabel}>PRO</span>
             <p>Upgrade for bank sync</p>
           </div>
+          <form action="/api/auth/signout" method="post" className={styles.logoutForm}>
+            <button type="submit" className={styles.logoutButton}>
+              Log Out
+            </button>
+          </form>
         </div>
       </aside>
       <main className={styles.content}>{children}</main>

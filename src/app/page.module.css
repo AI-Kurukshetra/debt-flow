@@ -2,9 +2,9 @@
   display: grid;
   gap: 28px;
   min-height: 100vh;
-  padding: 56px clamp(16px, 3vw, 48px);
+  padding: 32px clamp(16px, 3vw, 40px);
   align-items: start;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -17,7 +17,7 @@
 
 .hero {
   animation: floatIn 450ms ease-out;
-  padding: clamp(8px, 1vw, 18px) 0;
+  padding: clamp(12px, 1vw, 20px) 0;
 }
 
 .hero p {
@@ -32,11 +32,11 @@
 
 .card {
   animation: floatIn 450ms ease-out 120ms both;
-  background: linear-gradient(140deg, var(--card), var(--card-soft));
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .insightCard {
@@ -46,12 +46,12 @@
   align-content: start;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(146, 176, 255, 0.18), transparent 38%),
-    linear-gradient(160deg, rgba(16, 22, 46, 0.95), rgba(26, 35, 71, 0.9));
-  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+    radial-gradient(circle at top right, rgba(146, 176, 255, 0.14), transparent 34%),
+    linear-gradient(160deg, rgba(18, 24, 45, 0.96), rgba(23, 31, 58, 0.92));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .authPanel {
@@ -109,16 +109,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 42px;
+  height: 40px;
   padding: 0 18px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid transparent;
   font-weight: 600;
   transition: all 140ms ease;
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, white 22%), #1f8ad5);
+  background: var(--accent);
   color: white;
   border-color: rgba(47, 103, 255, 0.4);
 }
@@ -132,6 +132,11 @@
 
 .card h2 {
   margin-bottom: 14px;
+}
+
+.card h2,
+.hero h1 {
+  letter-spacing: -0.02em;
 }
 
 .statRow {
@@ -204,7 +209,7 @@
 @media (hover: hover) and (pointer: fine) {
   .primaryButton:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(47, 103, 255, 0.25);
+    filter: brightness(1.08);
   }
 
   .secondaryButton:hover,
