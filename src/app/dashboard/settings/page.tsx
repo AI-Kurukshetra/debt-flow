@@ -1,12 +1,11 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { SettingsManager } from "@/components/settings/settings-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 
 export default async function SettingsPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   const { data: profile } = await supabase
     .from("profiles")

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 
 type Account = {
   id: string;
@@ -19,11 +19,11 @@ type Program = {
 };
 
 export async function GET() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { supabase, user } = auth;
 
   const { data: accounts, error: accountsError } = await supabase
     .from("debt_accounts")

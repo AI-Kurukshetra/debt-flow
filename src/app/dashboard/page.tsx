@@ -1,5 +1,5 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 import type { Database } from "@/types/database";
 import { DebtProjectionChart } from "@/components/dashboard/debt-projection-chart";
@@ -9,18 +9,17 @@ import { ExportReportBtn } from "@/components/dashboard/export-report-btn";
 type DebtAccount = Database["public"]["Tables"]["debt_accounts"]["Row"];
 
 export default async function DashboardPage() {
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const auth = await getAuthenticatedAppContext();
+  const user = auth?.user ?? null;
 
   let accounts: DebtAccount[] = [];
 
-  if (user) {
+  if (auth) {
+    const { supabase } = auth;
     const { data } = await supabase
       .from("debt_accounts")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", auth.user.id)
       .eq("is_active", true)
       .order("current_balance", { ascending: false });
     accounts = (data as DebtAccount[]) ?? [];

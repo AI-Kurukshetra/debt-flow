@@ -1,12 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 
 export async function GET(request: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { supabase, user } = auth;
 
   const { searchParams } = new URL(request.url);
   const account_id = searchParams.get("account_id");
@@ -37,11 +37,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { supabase, user } = auth;
 
   const body = await request.json();
   const { data, error } = await supabase

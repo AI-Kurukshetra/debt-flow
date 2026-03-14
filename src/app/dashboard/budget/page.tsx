@@ -1,5 +1,5 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BudgetManager } from "@/components/budget/budget-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 
 export default async function BudgetPage({
@@ -10,10 +10,9 @@ export default async function BudgetPage({
   const resolvedSearchParams = await searchParams;
   const month = resolvedSearchParams.month || new Date().toISOString().split('T')[0].substring(0, 7);
   
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   // Fetch categories for the selected month
   const { data: categories } = await supabase

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentCustomUser } from "@/lib/auth/custom";
+import { getCurrentAppUser } from "@/lib/auth/server";
 
 export async function GET() {
-  const user = await getCurrentCustomUser();
+  const user = await getCurrentAppUser();
 
   if (!user) {
     return NextResponse.json({ user: null }, { status: 401 });

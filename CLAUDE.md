@@ -39,6 +39,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run migrations locally: `npm run db:reset` (Docker required)
 - Generate updated types: `npx supabase gen types typescript --local > src/types/database.ts`
 
+### Dual Auth Systems
+The codebase supports **two parallel authentication systems**:
+
+**Supabase OTP Auth** (original):
+- Endpoints: `src/app/api/auth/request-otp`, `verify-otp`, `signout`
+- Entry point: `src/app/page.tsx` (landing page with OTP form)
+- Uses `@supabase/supabase-js` and `@supabase/ssr`
+- Session cookie: Standard Supabase session management
+
+**Custom Password Auth**:
+- Endpoints: `src/app/api/auth/login`, `register`, `session`, `refresh`
+- Entry points: `src/app/login/page.tsx`, `src/app/register/page.tsx`
+- Implementation: `src/lib/auth/custom.ts`
+- Database: RPCs `authenticate_local_user`, `register_local_user` in Postgres
+- Session management: Cookies `debtflow_session` and `debtflow_refresh`
+- Tables: `user_sessions`, `refresh_tokens`
+- Migration: `20260314150000_custom_auth.sql`
+
+**⚠️ Known Issue**: `src/middleware.ts` checks for `session_token` cookie but custom auth uses `debtflow_session` — mismatch needs investigation.
+
+### Additional Routes
+- `src/app/login/page.tsx`: Password-based login using `PasswordAuthForm`
+- `src/app/register/page.tsx`: User registration page
+- `src/app/onboarding/page.tsx`: 3-step onboarding wizard (add debt → choose strategy → set budget)
+  - Calls `/api/accounts`, `/api/strategies`, `/api/profile`
+- `src/app/dashboard/debt-free/page.tsx`: Celebration page with mock stats
+
+### Admin & Service-Role Clients
+**Admin Client**:
+- Location: `src/lib/supabase/admin.ts`
+- Function: `createAdminSupabaseClient()` — service role client with no session persistence
+- Use case: Demo data access without authentication context
+
+### Frontend Libraries
+- **recharts**: Chart library for visualizations
+  - Components: `DebtProjectionChart`, `SpendingDonut`
+  - SSR-guarded via `src/components/ui/chart-wrapper.tsx`
+- **@dnd-kit**: Drag-and-drop functionality
+  - Primary use: `PayoffOrderList` for custom strategy ordering
+- **Toast System**: `src/components/ui/toast-provider.tsx`
+  - Hook: `useToast()` with `addToast(message, type)`
+  - Auto-dismisses after 4 seconds
+
+### Payoff Math & Calculations
+No shared utility library — payoff calculations are inline in route handlers:
+- `/api/analytics` route handler
+- `/api/strategies/calculate` route handler (avalanche/snowball with `extra_monthly_payment`)
+
+### Dashboard Navigation
+Dashboard shell (`src/app/dashboard/layout.tsx`) contains 8 nav items:
+- Overview, Accounts, Strategies, Payments, Budget, Forgiveness, Refinancing, Settings
+
 ## Development Commands
 
 ### Core Commands

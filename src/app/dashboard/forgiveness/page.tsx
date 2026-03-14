@@ -1,12 +1,11 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ForgivenessManager } from "@/components/forgiveness/forgiveness-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 
 export default async function ForgivenessPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   // Fetch programs
   const { data: programs } = await supabase

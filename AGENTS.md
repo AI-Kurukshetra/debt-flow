@@ -1,19 +1,23 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/app`: App Router pages and route handlers. The root route `src/app/page.tsx` now acts as an auth-aware redirect entrypoint; visible product entrypoints include `src/app/login/page.tsx`, `src/app/register/page.tsx`, and `src/app/dashboard/page.tsx`; auth endpoints live under `src/app/api/auth/*`.
-- `src/components`: client-side UI for both auth paths, including `src/components/auth/otp-form.tsx` and `src/components/auth/password-auth-form.tsx`.
+- `src/app`: App Router pages and route handlers. The root route `src/app/page.tsx` is an auth-aware redirect; auth entry pages live at `src/app/login/page.tsx`, `src/app/register/page.tsx`, and `src/app/onboarding/page.tsx`; the authenticated product surface now lives under `src/app/dashboard/*`.
+- `src/app/dashboard`: the main product shell plus feature pages for `accounts`, `budget`, `debt-free`, `forgiveness`, `payments`, `refinancing`, `settings`, and `strategies`, with route-local `loading.tsx` and `error.tsx`.
+- `src/app/api`: route handlers now cover auth plus domain APIs for accounts, analytics, budget, credit scores, forgiveness, goals, notifications, payments, profile, refinancing, schedules, servicers, strategies, tax, and transactions.
+- `src/components`: feature-oriented client UI organized by domain (`accounts`, `budget`, `dashboard`, `forgiveness`, `onboarding`, `payments`, `refinancing`, `settings`, `strategies`, `ui`, and `auth`).
 - `src/lib/supabase`: browser, server, and admin Supabase helpers. The server helper is async and must be awaited in server components and route handlers.
 - `src/lib/auth`: custom username/password session logic layered on top of the Supabase-backed app.
-- `src/types/database.ts`: typed database contract for the Supabase schema used by the app-facing clients.
-- `supabase/migrations`: schema history, including the starter schema, additive DebtFlow schema, and the custom auth tables/functions migration.
-- `supabase/seed.sql`: shared reference/demo content plus dev fixture data for custom-auth users and backend feature development.
-- `docs/PLAN.md` is legacy planning context; `docs/PLAN_codex.md` is the current phased implementation plan aligned to the present starter-pack codebase.
+- `src/middleware.ts`: dashboard gatekeeping middleware; keep it aligned with the actual auth cookie/session model whenever auth changes.
+- `src/types/database.ts`: typed database contract for the expanded Supabase schema used by the app-facing clients.
+- `supabase/migrations`: schema history, including the starter schema, additive DebtFlow schema, custom auth tables/functions, and subsequent trigger/profile alignment work.
+- `supabase/seed.sql`: reference data plus substantial dev fixtures for custom-auth users and DebtFlow backend entities.
+- `docs/PLAN.md` and `docs/PLAN_codex.md`: older planning references; `docs/PLAN_CC.md` is also actively used in the repo and should be treated as implementation context rather than canonical truth.
 - `start_server.sh` provides a one-command local + Cloudflare preview flow.
 
 ## Build, Test, and Development Commands
 - `npm run dev`: starts Next.js dev server (App Router) on `http://localhost:3000`.
 - `npm run build`: performs a production compile and type check via Next.js.
+- `npm run start`: runs the production Next.js server.
 - `npm run lint`: runs ESLint configured by `eslint.config.mjs`.
 - `npm run typecheck`: executes `tsc --noEmit` for static typing validation.
 - `npm run supabase:start` / `stop`: manage local Supabase containers once Docker is available.
@@ -28,32 +32,36 @@
 - Styling uses CSS modules (`*.module.css`) scoped per component or route and leverages CSS custom properties defined in `globals.css`.
 - Route-local styles should follow the actual file on disk (`page.module.css` beside the route file); keep imports aligned with filenames.
 - Server-side Supabase access must use `await createServerSupabaseClient()`; do not treat the helper as synchronous.
-- Public demo reads in the dashboard are intentionally separated from authenticated reads; preserve that distinction when changing dashboard queries or access behavior.
+- The repo now mixes two auth models:
+  - legacy OTP via Supabase Auth route handlers
+  - custom username/password auth via `src/lib/auth/custom.ts` and the `/api/auth/login|register|refresh|session` routes
+- Many newer API routes still authorize with `supabase.auth.getUser()`, while the custom auth system uses its own cookie/session tables. When changing auth, audit middleware, dashboard guards, and API authorization together instead of touching only one layer.
 - The default browser entry is now login-first:
   - `/` redirects unauthenticated users to `/login`
   - `/` redirects authenticated users to `/dashboard`
   - sign-out returns to `/login`
-- The app currently supports two auth tracks during transition:
-  - OTP via Supabase Auth route handlers
-  - custom username/password auth via `src/lib/auth/custom.ts` and the `/api/auth/login|register|refresh|session` routes
-- Prefer extending the current starter-pack app incrementally. Preserve the login-first root redirect, the demo dashboard path, and the OTP flow unless the task explicitly includes changing that migration state.
+- Prefer extending the current product shell incrementally. Preserve the login-first root redirect and the existing dashboard feature routes unless the task explicitly includes changing information architecture.
 - Use `src/lib/supabase/admin.ts` only for service-role or backend-only operations; never import it into client components.
 - Keep custom-auth session handling cookie-based and server-owned; do not move password or token logic into the browser.
+- UI work should preserve the established route-per-feature pattern under `src/app/dashboard/*` and the corresponding domain component folders.
+- Charts and drag/drop behavior currently rely on `recharts` and `@dnd-kit/*`; prefer reusing those libraries instead of introducing parallel UI stacks.
 - Pre-commit formatting follows ESLint and TypeScript defaults; run `npm run lint`/`typecheck` before PRs.
 
 ## Testing Guidelines
 - No automated test suite yet—add targeted unit or integration tests near the feature they cover in `src/` (e.g., `src/components/auth/otp-form.test.tsx`).
 - Prefer descriptive test names that include the component and behavior (e.g., `OtpForm handles OTP verification`).
-- Run `npm run test` once a suite exists; for now validate manually with `npm run dev`, anonymous `/dashboard` access, OTP auth, and custom username/password auth flows.
+- Run `npm run test` once a suite exists; for now validate manually with `npm run dev`, the login-first redirect flow, onboarding access, dashboard feature routes, OTP auth, and custom username/password auth flows.
 - For schema work, validate both local and remote expectations:
   - local: `npm run db:reset` when Docker is available
   - hosted: `npx supabase db push --include-all` against the linked project
 - When changing seeded backend data, verify at least one custom-auth dev user can sign in and read only their own rows under RLS.
+- When changing dashboard APIs, exercise at least one page that consumes the route handler, not just the handler itself.
 
 ## Commit & Pull Request Guidelines
 - Commit messages follow `<scope>: <short description>` (e.g., `supabase: add seed data`). Keep lines under 72 characters.
 - Pull requests require a concise description of changes, linked issue/ticket if available, and whether Supabase migrations or env updates need release notes.
 - Include screenshots or video links for UI changes when possible; mention any manual steps to push Supabase migrations, seed backend fixtures, run `start_server.sh`, or configure Vercel envs in the PR description.
+- If a change touches auth or middleware, note whether it affects custom auth, Supabase Auth, or both.
 
 ## Configuration & Security Tips
 - Keep `.env.local` out of Git; it currently needs the Supabase URL, anon key, service-role key, and any local-only database connection secrets required for CLI workflows.

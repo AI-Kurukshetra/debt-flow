@@ -1,12 +1,11 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { StrategyManager } from "@/components/strategies/strategy-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 
 export default async function StrategiesPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   // Fetch active strategy
   const { data: activeStrategy } = await supabase

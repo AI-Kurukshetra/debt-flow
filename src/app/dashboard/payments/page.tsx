@@ -1,12 +1,11 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { PaymentsManager } from "@/components/payments/payments-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 
 export default async function PaymentsPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   // Fetch upcoming payments
   const today = new Date().toISOString().split("T")[0];

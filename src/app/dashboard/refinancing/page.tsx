@@ -1,15 +1,14 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { RefinancingManager } from "@/components/refinancing/refinancing-manager";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import styles from "./page.module.css";
 import type { Database } from "@/types/database";
 
 type DebtAccount = Database["public"]["Tables"]["debt_accounts"]["Row"];
 
 export default async function RefinancingPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   // Fetch refinancing offers
   const { data: offers } = await supabase

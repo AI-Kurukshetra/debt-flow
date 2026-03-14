@@ -1,8 +1,8 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AccountsList, Account } from "@/components/accounts/accounts-list";
 import styles from "./page.module.css";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 
 type DebtAccount = Database["public"]["Tables"]["debt_accounts"]["Row"];
 
@@ -20,10 +20,9 @@ export default async function AccountsPage({
   const resolvedSearchParams = await searchParams;
   const showClosed = resolvedSearchParams.show_closed === "true";
   
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) return null;
+  const { user, supabase } = auth;
 
   let query = supabase
     .from("debt_accounts")

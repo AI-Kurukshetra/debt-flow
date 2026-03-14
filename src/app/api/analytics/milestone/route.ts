@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAuthenticatedAppContext } from "@/lib/auth/server";
 import type { Database } from "@/types/database";
 
 type DebtAccount = Database["public"]["Tables"]["debt_accounts"]["Row"];
 type MilestoneType = "debt_free" | "fifty_percent" | "first_payoff";
 
 export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const auth = await getAuthenticatedAppContext();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { supabase, user } = auth;
 
   let body: { milestone_type?: MilestoneType };
   try {
