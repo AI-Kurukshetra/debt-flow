@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.container:hover {
+  color: var(--foreground);
+}
+
+.container input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

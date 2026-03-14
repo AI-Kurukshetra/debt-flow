@@ -1,0 +1,93 @@
+.container {
+  display: grid;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.recalculating {
+  font-size: 0.75rem;
+  color: var(--accent-soft);
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: border-color 200ms ease;
+}
+
+.draggable {
+  cursor: grab;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+.item:hover {
+  border-color: var(--accent-soft);
+}
+
+.rank {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  width: 24px;
+}
+
+.itemContent {
+  flex: 1;
+}
+
+.itemName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.itemMeta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.handle {
+  color: var(--border);
+  font-size: 1.2rem;
+  user-select: none;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

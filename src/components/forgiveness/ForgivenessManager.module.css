@@ -1,0 +1,50 @@
+.container {
+  display: grid;
+  gap: 32px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.header p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.topSection {
+  animation: fadeIn 400ms ease-out;
+}
+
+.alertSection {
+  animation: fadeIn 400ms ease-out 100ms both;
+}
+
+.historySection {
+  animation: fadeIn 400ms ease-out 200ms both;
+}
+
+.programsSection {
+  display: grid;
+  gap: 24px;
+  animation: fadeIn 400ms ease-out 300ms both;
+}
+
+.programsSection h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.programGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

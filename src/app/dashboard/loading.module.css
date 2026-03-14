@@ -1,0 +1,66 @@
+.container {
+  display: grid;
+  gap: 32px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.skeletonTitle {
+  width: 200px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.skeletonActions {
+  width: 150px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.skeletonStat {
+  height: 120px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.skeletonChart {
+  height: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+.skeletonActivity {
+  height: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.6; }
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

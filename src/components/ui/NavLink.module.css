@@ -1,20 +1,15 @@
 .link {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: var(--foreground);
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
   text-decoration: none;
-  font-size: 0.875rem;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
-
-.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-.link:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.06);
-}
+.link:hover { background: var(--border); color: var(--foreground); }
+.active { background: var(--accent); color: #fff; }
+.icon { font-size: 1rem; width: 1.25rem; text-align: center; }

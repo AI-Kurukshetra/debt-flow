@@ -1,0 +1,77 @@
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.formGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.formGroup input,
+.select,
+.formGroup textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: border-color 200ms ease;
+  width: 100%;
+}
+
+.formGroup input:focus,
+.select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.select {
+  height: 48px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover {
+  filter: brightness(1.1);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.secondaryButton:hover {
+  border-color: var(--accent-soft);
+  color: var(--foreground);
+}

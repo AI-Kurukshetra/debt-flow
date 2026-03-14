@@ -740,6 +740,8 @@ export default async function DashboardPage() {
 
 ---
 
+---
+
 ## Phase 5a — Onboarding
 
 ### Task 5a.1: Debt Type Select Component
@@ -748,41 +750,7 @@ export default async function DashboardPage() {
 - Create: `src/components/onboarding/debt-type-select.tsx`
 
 - [ ] Create `src/components/onboarding/debt-type-select.tsx`:
-
-```tsx
-"use client";
-
-type AccountType =
-  | "student_loan" | "credit_card" | "mortgage"
-  | "personal_loan" | "auto_loan" | "medical" | "other";
-
-const LABELS: Record<AccountType, string> = {
-  student_loan: "Student Loan",
-  credit_card: "Credit Card",
-  mortgage: "Mortgage",
-  personal_loan: "Personal Loan",
-  auto_loan: "Auto Loan",
-  medical: "Medical",
-  other: "Other",
-};
-
-interface DebtTypeSelectProps {
-  value: AccountType | "";
-  onChange: (value: AccountType) => void;
-}
-
-export function DebtTypeSelect({ value, onChange }: DebtTypeSelectProps) {
-  return (
-    <select value={value} onChange={(e) => onChange(e.target.value as AccountType)}>
-      <option value="" disabled>Select debt type…</option>
-      {(Object.keys(LABELS) as AccountType[]).map((type) => (
-        <option key={type} value={type}>{LABELS[type]}</option>
-      ))}
-    </select>
-  );
-}
-```
-
+  - Dropdown with options: student_loan, credit_card, mortgage, personal_loan, auto_loan, medical, other.
 - [ ] Run `npm run typecheck` — no errors
 - [ ] Commit: `git commit -m "feat: add DebtTypeSelect onboarding component"`
 
@@ -795,47 +763,24 @@ export function DebtTypeSelect({ value, onChange }: DebtTypeSelectProps) {
 - Create: `src/components/onboarding/StepIndicator.module.css`
 
 - [ ] Create `src/components/onboarding/step-indicator.tsx`:
-
-```tsx
-import styles from "./StepIndicator.module.css";
-
-interface StepIndicatorProps { current: number; total: number; }
-
-export function StepIndicator({ current, total }: StepIndicatorProps) {
-  return (
-    <div className={styles.bar}>
-      {Array.from({ length: total }, (_, i) => (
-        <div key={i} className={`${styles.step} ${i + 1 <= current ? styles.done : ""}`} />
-      ))}
-      <span className={styles.label}>Step {current} of {total}</span>
-    </div>
-  );
-}
-```
-
+  - Progress bar showing current step (1 of 3, etc.).
 - [ ] Run `npm run typecheck` — no errors
 - [ ] Commit: `git commit -m "feat: add StepIndicator onboarding component"`
 
 ---
 
-### Task 5a.3: Onboarding Page (3 Steps)
+### Task 5a.3: Onboarding Page (3-Step Wizard)
 
 **Files:**
 - Create: `src/app/onboarding/page.tsx`
 - Create: `src/app/onboarding/page.module.css`
 
-Steps:
-1. Add first debt account (name, type via `DebtTypeSelect`, balance, interest rate, minimum payment)
-2. Choose repayment strategy (Snowball / Avalanche / Custom radio group)
-3. Set monthly budget + "Skip for now" exit
-
-- [ ] Create the 3-step onboarding page using `useState` for step tracking
-- [ ] Step 1: POST to `/api/accounts` on submit
-- [ ] Step 2: POST to `/api/strategies` on submit
-- [ ] Step 3: POST to `/api/budget` on submit; "Skip for now" navigates directly to `/dashboard`
-- [ ] On final step completion, PATCH `/api/profile` with `{ onboarding_step: 3 }` then redirect to `/dashboard`
-- [ ] Run `npm run dev` — walk through all 3 steps manually
-- [ ] Commit: `git commit -m "feat: add 3-step onboarding flow"`
+- [ ] Implement Step 1: Add first debt account (Full form with `DebtTypeSelect`).
+- [ ] Implement Step 2: Choose repayment strategy (Comparison cards: Snowball vs. Avalanche with "Months Saved" stats).
+- [ ] Implement Step 3: Set monthly target (Currency input + Live chart showing debt-free date impact).
+- [ ] Handle "Skip for now" logic and redirect to `/dashboard`.
+- [ ] On completion, PATCH `/api/profile` with `{ onboarding_step: 3 }`.
+- [ ] Commit: `git commit -m "feat: add 3-step onboarding flow with strategy/budget cards"`
 
 ---
 
@@ -847,64 +792,22 @@ Steps:
 - Create: `src/components/dashboard/debt-projection-chart.tsx`
 - Create: `src/components/dashboard/DebtProjectionChart.module.css`
 
-- [ ] Create `src/components/dashboard/debt-projection-chart.tsx`:
-
-```tsx
-"use client";
-
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { ChartWrapper } from "@/components/ui/chart-wrapper";
-import { useState, useEffect } from "react";
-
-interface ProgressPoint { month: string; actual: number; projected: number; }
-
-export function DebtProjectionChart() {
-  const [data, setData] = useState<ProgressPoint[]>([]);
-  const [view, setView] = useState<"both" | "actual" | "projected">("both");
-
-  useEffect(() => {
-    fetch("/api/analytics/progress").then(r => r.json()).then(r => setData(r.data?.timeline ?? []));
-  }, []);
-
-  return (
-    <ChartWrapper title="Debt Projection">
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
-        {(["both", "actual", "projected"] as const).map(v => (
-          <button key={v} onClick={() => setView(v)} style={{ fontWeight: view === v ? 700 : 400 }}>
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </button>
-        ))}
-      </div>
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-          <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 12 }} />
-          <YAxis tick={{ fill: "var(--muted)", fontSize: 12 }} />
-          <Tooltip />
-          <Legend />
-          {(view === "both" || view === "actual") && <Line type="monotone" dataKey="actual" stroke="var(--accent)" dot={false} />}
-          {(view === "both" || view === "projected") && <Line type="monotone" dataKey="projected" stroke="var(--muted)" strokeDasharray="4 4" dot={false} />}
-        </LineChart>
-      </ResponsiveContainer>
-    </ChartWrapper>
-  );
-}
-```
-
-- [ ] Run `npm run typecheck` — no errors
+- [ ] Implement interactive Line/Area chart using Recharts.
+- [ ] Fetch data from `GET /api/analytics/progress`.
+- [ ] Support toggling between "Actual" and "Projected" lines.
 - [ ] Commit: `git commit -m "feat: add DebtProjectionChart dashboard component"`
 
 ---
 
-### Task 5b.2: Recent Activity Feed
+### Task 5b.2: Recent Activity & Milestone Alerts
 
 **Files:**
 - Create: `src/components/dashboard/recent-activity.tsx`
 - Create: `src/components/dashboard/RecentActivity.module.css`
 
-- [ ] Fetch last 5 entries from `/api/notifications` and render a feed (icon, title, subtitle, relative date)
-- [ ] Run `npm run typecheck` — no errors
-- [ ] Commit: `git commit -m "feat: add RecentActivity dashboard component"`
+- [ ] Render activity feed with icons for payments, interest alerts, and milestones.
+- [ ] Integrate "Rate Drop Alert" banner for specific high-interest accounts.
+- [ ] Commit: `git commit -m "feat: add RecentActivity feed with milestone alerts"`
 
 ---
 
@@ -913,9 +816,7 @@ export function DebtProjectionChart() {
 **Files:**
 - Create: `src/components/dashboard/export-report-btn.tsx`
 
-- [ ] `"use client"` component with a dropdown: "Export as CSV" / "Export as PDF"
-- [ ] CSV: build from `GET /api/accounts` response, use `Blob` + `URL.createObjectURL`
-- [ ] PDF: placeholder `window.print()` for now
+- [ ] Dropdown for CSV/PDF export.
 - [ ] Commit: `git commit -m "feat: add ExportReportBtn dashboard component"`
 
 ---
@@ -926,223 +827,129 @@ export function DebtProjectionChart() {
 
 **Files:**
 - Create: `src/components/accounts/account-form.tsx`
-- Create: `src/components/accounts/AccountForm.module.css`
 - Create: `src/components/accounts/payoff-progress-bar.tsx`
-- Create: `src/components/accounts/PayoffProgressBar.module.css`
 - Create: `src/components/accounts/closed-accounts-toggle.tsx`
 
-- [ ] Create `account-form.tsx` — `"use client"` form with fields: account_name, account_type (`DebtTypeSelect`), servicer, current_balance, original_balance, interest_rate, minimum_payment, due_date, autopay_enabled
-- [ ] Create `payoff-progress-bar.tsx`:
-
-```tsx
-interface PayoffProgressBarProps { currentBalance: number; originalBalance: number; }
-
-export function PayoffProgressBar({ currentBalance, originalBalance }: PayoffProgressBarProps) {
-  const paidPercent = originalBalance > 0 ? Math.min(100, ((originalBalance - currentBalance) / originalBalance) * 100) : 0;
-  return (
-    <div>
-      <div style={{ height: 8, background: "var(--border)", borderRadius: 4, overflow: "hidden" }}>
-        <div style={{ width: `${paidPercent}%`, height: "100%", background: "var(--accent)", borderRadius: 4 }} />
-      </div>
-      <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>{paidPercent.toFixed(1)}% paid</span>
-    </div>
-  );
-}
-```
-
-- [ ] Create `closed-accounts-toggle.tsx` — `"use client"` checkbox that appends `?show_closed=true` to the current URL via `useRouter`
-- [ ] Run `npm run typecheck` — no errors
-- [ ] Commit: `git commit -m "feat: add account components (form, progress bar, closed toggle)"`
+- [ ] `AccountForm`: Full CRUD form with account type badges.
+- [ ] `PayoffProgressBar`: Visual indicator showing % of original balance paid off.
+- [ ] `ClosedAccountsToggle`: URL-syncing toggle for inactive loans.
+- [ ] Commit: `git commit -m "feat: add account components (form, progress, toggle)"`
 
 ---
 
 ### Task 5c.2: Accounts Pages
 
 **Files:**
-- Create: `src/app/dashboard/accounts/page.tsx` + `page.module.css`
-- Create: `src/app/dashboard/accounts/new/page.tsx` + `page.module.css`
-- Create: `src/app/dashboard/accounts/[id]/page.tsx` + `page.module.css`
+- Create: `src/app/dashboard/accounts/page.tsx`
+- Create: `src/app/dashboard/accounts/[id]/page.tsx`
 
-- [ ] `accounts/page.tsx` — server component; fetch `GET /api/accounts`; render account cards with `PayoffProgressBar`; include `ClosedAccountsToggle`
-- [ ] `accounts/new/page.tsx` — render `AccountForm` with POST handler
-- [ ] `accounts/[id]/page.tsx` — fetch single account; show detail + transaction history; render `PayoffProgressBar`
-- [ ] Commit: `git commit -m "feat: add accounts list, new, and detail pages"`
+- [ ] Implement accounts list with "Interest Saved Lifetime" column.
+- [ ] Implement account detail page with transaction history table.
+- [ ] Commit: `git commit -m "feat: add accounts list and detail pages"`
 
 ---
 
 ## Phase 5d — Strategies Pages + Components
 
-### Task 5d.1: Strategy Components
+### Task 5d.1: Strategy Components (Interactive Reordering)
 
 **Files:**
 - Create: `src/components/strategies/strategy-selector.tsx`
-- Create: `src/components/strategies/recalculate-form.tsx`
 - Create: `src/components/strategies/payoff-order-list.tsx`
 
-- [ ] Create `strategy-selector.tsx` — radio group: Snowball | Avalanche | Custom; `"use client"`
-- [ ] Create `recalculate-form.tsx` — extra payment `<input>` + "Recalculate" button; calls `POST /api/strategies/calculate`; accepts `onResults` callback prop
-- [ ] Create `payoff-order-list.tsx` — ordered list of accounts showing "PAY THIS MONTH" vs "MINIMUM PAYMENT" based on active strategy
-- [ ] Commit: `git commit -m "feat: add strategy components (selector, recalculate form, payoff order list)"`
+- [ ] `StrategySelector`: Radio cards for Snowball/Avalanche selection.
+- [ ] `PayoffOrderList`: **Implement Drag-and-Drop** reordering for "Custom Strategy" flow (using `dnd-kit`).
+- [ ] Show "Live Recalculating" feedback during reorder.
+- [ ] Commit: `git commit -m "feat: add strategy selector and interactive reordering list"`
 
 ---
 
 ### Task 5d.2: Strategies Pages
 
 **Files:**
-- Create: `src/app/dashboard/strategies/page.tsx` + `page.module.css`
-- Create: `src/app/dashboard/strategies/calendar/page.tsx` + `page.module.css`
+- Create: `src/app/dashboard/strategies/page.tsx`
+- Create: `src/app/dashboard/strategies/calendar/page.tsx`
 
-- [ ] `strategies/page.tsx` — show active strategy; avalanche vs snowball comparison cards; embed `RecalculateForm` and `PayoffOrderList`
-- [ ] `strategies/calendar/page.tsx` — month-by-month payoff calendar using data from `GET /api/strategies/calculate`
+- [ ] Strategies page: side-by-side comparison cards + prioritized list.
+- [ ] Calendar page: Month-by-month projection table.
 - [ ] Commit: `git commit -m "feat: add strategies page and payoff calendar"`
 
 ---
 
 ## Phase 5e — Budget Page + Components
 
-### Task 5e.1: Budget Components
+### Task 5e.1: Budget & Category Management
 
 **Files:**
 - Create: `src/components/budget/spending-donut.tsx`
-- Create: `src/components/budget/budget-vs-actual-chart.tsx`
+- Create: `src/components/budget/category-manager.tsx`
 - Create: `src/components/budget/transaction-form.tsx`
-- Create: `src/components/budget/category-form.tsx`
-- Create: `src/components/budget/month-picker.tsx`
-- Create: `src/components/budget/over-budget-badge.tsx`
 
-- [ ] Create `spending-donut.tsx` — recharts `PieChart`; data from `GET /api/budget`; shows % spent per category
-
-```tsx
-"use client";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { ChartWrapper } from "@/components/ui/chart-wrapper";
-// ... fetch /api/budget, map to [{ name, value }], render with CSS var colors
-```
-
-- [ ] Create `budget-vs-actual-chart.tsx` — recharts `BarChart`; last 6 months budgeted vs actual; data from `GET /api/transactions?groupBy=month`
-- [ ] Create `transaction-form.tsx` — modal form: amount, category, description, date; POST to `/api/transactions`
-- [ ] Create `category-form.tsx` — modal: edit category name + monthly limit; PATCH to `/api/budget`
-- [ ] Create `month-picker.tsx` — `<select>` for month/year; updates `?month=YYYY-MM` query param
-- [ ] Create `over-budget-badge.tsx` — inline `<span>` badge shown when `spent > limit`
-- [ ] Commit: `git commit -m "feat: add budget components (donut, bar chart, transaction form, month picker)"`
-
----
-
-### Task 5e.2: Budget Page
-
-**Files:**
-- Create: `src/app/dashboard/budget/page.tsx` + `page.module.css`
-
-- [ ] Fetch budget categories + transactions for current month
-- [ ] Render `SpendingDonut`, `BudgetVsActualChart`, category table with `OverBudgetBadge`, `TransactionForm` trigger, `MonthPicker`
-- [ ] Commit: `git commit -m "feat: add budget page"`
+- [ ] `SpendingDonut`: Recharts donut chart for % spent.
+- [ ] `CategoryManager`: **Manage Categories modal** to add/delete categories and edit limits.
+- [ ] `TransactionForm`: Form with category icons and search.
+- [ ] Show **"OVER BUDGET"** alerts in red visual states.
+- [ ] Commit: `git commit -m "feat: add budget charts and category management UI"`
 
 ---
 
 ## Phase 5f — Forgiveness Page + Components
 
-### Task 5f.1: Forgiveness Components
+### Task 5f.1: Forgiveness Visuals
 
 **Files:**
 - Create: `src/components/forgiveness/circular-progress.tsx`
-- Create: `src/components/forgiveness/recertification-alert.tsx`
 - Create: `src/components/forgiveness/ecf-table.tsx`
-- Create: `src/components/forgiveness/ecf-form.tsx`
-- Create: `src/components/forgiveness/program-card.tsx`
 
-- [ ] Create `circular-progress.tsx` — SVG arc showing N/120 PSLF payments:
-
-```tsx
-interface CircularProgressProps { current: number; total: number; }
-
-export function CircularProgress({ current, total }: CircularProgressProps) {
-  const radius = 48;
-  const circumference = 2 * Math.PI * radius;
-  const filled = (current / total) * circumference;
-  return (
-    <svg width={120} height={120} viewBox="0 0 120 120">
-      <circle cx={60} cy={60} r={radius} fill="none" stroke="var(--border)" strokeWidth={10} />
-      <circle cx={60} cy={60} r={radius} fill="none" stroke="var(--accent)" strokeWidth={10}
-        strokeDasharray={`${filled} ${circumference}`} strokeLinecap="round"
-        transform="rotate(-90 60 60)" />
-      <text x={60} y={60} textAnchor="middle" dominantBaseline="middle" fontSize={14} fill="var(--foreground)">
-        {current}/{total}
-      </text>
-    </svg>
-  );
-}
-```
-
-- [ ] Create `recertification-alert.tsx` — banner with days countdown to IDR recertification; "Update Income Details" CTA
-- [ ] Create `ecf-table.tsx` — table: employer, period, status, last_updated, actions (edit/delete)
-- [ ] Create `ecf-form.tsx` — modal: employer name, certification period, submit; POST to `/api/forgiveness/tracking`
-- [ ] Create `program-card.tsx` — card for each forgiveness program with eligibility info
-- [ ] Commit: `git commit -m "feat: add forgiveness components (circular progress, ECF table/form, recert alert)"`
+- [ ] `CircularProgress`: PSLF progress arc (e.g., 84/120) with **Estimated Forgiveness Date label**.
+- [ ] `EcfTable`: Table with **Status Badges** (Approved/Pending) and employment period.
+- [ ] `RecertificationAlert`: Banner with "Update Income Details" CTA.
+- [ ] Commit: `git commit -m "feat: add forgiveness circular progress and ECF status tracking"`
 
 ---
 
-### Task 5f.2: Forgiveness Page
-
-**Files:**
-- Create: `src/app/dashboard/forgiveness/page.tsx` + `page.module.css`
-
-- [ ] Fetch forgiveness programs + user tracking records
-- [ ] Render `ProgramCard` list, `CircularProgress` for PSLF, `RecertificationAlert`, `EcfTable`
-- [ ] Commit: `git commit -m "feat: add forgiveness page"`
-
----
-
-## Phase 5g — Payments + Debt-Free Pages
+## Phase 5g — Payments + Debt-Free Celebration
 
 ### Task 5g.1: Payments Page
 
 **Files:**
-- Create: `src/app/dashboard/payments/page.tsx` + `page.module.css`
+- Create: `src/app/dashboard/payments/page.tsx`
 
-- [ ] Fetch upcoming payments from `GET /api/payments/upcoming`
-- [ ] Fetch payment history from `GET /api/payments`
-- [ ] Render: upcoming payments list (calendar style), autopay toggle per account, payment history tab
-- [ ] Autopay toggle: PATCH `/api/accounts/[id]` with `{ autopay_enabled: true/false }`
-- [ ] Commit: `git commit -m "feat: add payments page with upcoming list and autopay toggle"`
+- [ ] Upcoming payments calendar view.
+- [ ] Payment history table with **Principal/Interest split display**.
+- [ ] Commit: `git commit -m "feat: add payments page with history split"`
 
 ---
 
-### Task 5g.2: Debt-Free Celebration Page
+### Task 5g.2: Debt-Free Celebration Flow
 
 **Files:**
-- Create: `src/app/dashboard/debt-free/page.tsx` + `page.module.css`
+- Create: `src/app/dashboard/debt-free/page.tsx`
 
-- [ ] On mount, call `POST /api/analytics/milestone` with `{ milestone_type: "debt_free" }`
-- [ ] Show confetti animation (CSS keyframes burst)
-- [ ] Display journey summary: total paid, interest saved, months taken (from milestone response)
-- [ ] "What's next?" section with goal suggestions + "Go to Dashboard" button
-- [ ] Commit: `git commit -m "feat: add debt-free celebration page"`
+- [ ] Confetti overlay component.
+- [ ] Milestone summary: Total Paid, Interest Saved, Total Journey Time.
+- [ ] "Set Next Goal" CTA.
+- [ ] Commit: `git commit -m "feat: add debt-free celebration flow"`
 
 ---
 
 ## Phase 5h — Remaining Domain Pages
 
-### Task 5h.1: Refinancing Page
+### Task 5h.1: Refinancing Comparison
 
 **Files:**
-- Create: `src/app/dashboard/refinancing/page.tsx` + `page.module.css`
+- Create: `src/app/dashboard/refinancing/page.tsx`
 
-- [ ] Fetch `GET /api/refinancing/offers` — list of refinancing offers
-- [ ] Render offer cards (lender, rate, term, monthly_savings)
-- [ ] Include "Add Offer" form (POST to `/api/refinancing`)
-- [ ] Commit: `git commit -m "feat: add refinancing page"`
+- [ ] **Comparison Grid UI**: Side-by-side offer cards showing APR savings and monthly delta.
+- [ ] Commit: `git commit -m "feat: add refinancing comparison UI"`
 
 ---
 
-### Task 5h.2: Settings Page
+### Task 5h.2: Settings & Integration Notes
 
-**Files:**
-- Create: `src/app/dashboard/settings/page.tsx` + `page.module.css`
-
-- [ ] Fetch `GET /api/profile` — render editable profile form (name, employment type, annual income)
-- [ ] PATCH to `/api/profile` on save
-- [ ] Sign out button — POST to `/api/auth/signout` + redirect to `/`
-- [ ] Commit: `git commit -m "feat: add settings page with profile edit and sign out"`
+- [ ] Profile editing (Annual Income, etc.).
+- [ ] Add **"Bank Sync: Manual Entry Only"** banner or "Coming Soon" for Plaid integration.
+- [ ] Commit: `git commit -m "feat: add settings page and bank sync placeholders"`
 
 ---
 

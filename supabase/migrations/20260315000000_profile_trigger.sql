@@ -1,21 +1,18 @@
--- Create function to handle new user creation
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER SET search_path = public
-AS $$
-BEGIN
-  INSERT INTO public.profiles (id, onboarding_step)
-  VALUES (NEW.id, 0)
-  ON CONFLICT (id) DO NOTHING;
-  RETURN NEW;
-END;
+-- Auto-insert a profiles row when a new user is created
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.profiles (user_id, onboarding_step, created_at, updated_at)
+  values (new.id, 0, now(), now())
+  on conflict (user_id) do nothing;
+  return new;
+end;
 $$;
 
--- Drop trigger if exists before creating
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-
--- Create trigger that fires after a new user is inserted
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
