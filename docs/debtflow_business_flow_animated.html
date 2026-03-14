@@ -1,0 +1,377 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:transparent}
+
+.shell{padding:1rem 0 2rem}
+
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
+.top-bar h2{font-size:17px;font-weight:500;color:var(--color-text-primary)}
+.top-bar p{font-size:12px;color:var(--color-text-secondary)}
+.nav-pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .2s}
+.pill.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+
+/* Journey track */
+.track-wrap{position:relative;overflow:hidden;border-radius:14px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);padding:1.5rem 1rem 1rem}
+.track-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+
+/* Step nodes across top */
+.steps-row{display:flex;align-items:flex-start;gap:0;position:relative;margin-bottom:1.5rem}
+.step-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;cursor:pointer}
+.step-node::before{content:'';position:absolute;top:18px;left:50%;right:-50%;height:2px;background:var(--color-border-tertiary);z-index:0;transition:background .4s}
+.step-node:last-child::before{display:none}
+.step-node.done::before{background:#27AE60}
+.step-node.active::before{background:linear-gradient(90deg,#27AE60,var(--color-border-tertiary))}
+
+.circle{width:38px;height:38px;border-radius:50%;border:2px solid var(--color-border-secondary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:1;position:relative;transition:all .35s;flex-shrink:0}
+.step-node.done .circle{background:#27AE60;border-color:#27AE60;color:#fff}
+.step-node.active .circle{border-color:#2E86AB;box-shadow:0 0 0 4px rgba(46,134,171,.18);background:#2E86AB;color:#fff}
+.step-num{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-top:6px;text-align:center;line-height:1.3;max-width:60px}
+.step-node.active .step-num{color:var(--color-text-primary);font-weight:500}
+
+/* Main scene */
+.scene{position:relative;min-height:300px;border-radius:12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);overflow:hidden;padding:1.5rem}
+.scene-inner{display:none;animation:sceneIn .4s ease forwards}
+.scene-inner.visible{display:flex;flex-direction:column}
+
+@keyframes sceneIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.scene-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.scene-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.25rem;line-height:1.5}
+
+/* Animated elements */
+.card-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem}
+.mini-card{flex:1;min-width:120px;border-radius:10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);padding:.75rem;animation:cardPop .4s ease forwards;opacity:0}
+.mini-card .mc-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.mini-card .mc-val{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.mini-card .mc-sub{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+@keyframes cardPop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.flow-box{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;white-space:nowrap;animation:cardPop .35s ease forwards;opacity:0}
+.flow-arrow{font-size:18px;color:var(--color-text-secondary);animation:arrowPulse 1s ease-in-out infinite}
+@keyframes arrowPulse{0%,100%{opacity:.4;transform:translateX(0)}50%{opacity:1;transform:translateX(3px)}}
+
+.pill-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.tag{font-size:12px;padding:5px 12px;border-radius:20px;animation:cardPop .35s ease forwards;opacity:0}
+
+.progress-section{margin-bottom:1rem}
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prog-label{font-size:12px;color:var(--color-text-secondary);min-width:100px}
+.prog-track{flex:1;height:8px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;width:0%;transition:width 1s ease}
+.prog-pct{font-size:12px;font-weight:500;color:var(--color-text-primary);min-width:36px;text-align:right}
+
+.notif-list{display:flex;flex-direction:column;gap:8px}
+.notif-item{display:flex;align-items:flex-start;gap:10px;padding:.625rem .875rem;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);animation:cardPop .35s ease forwards;opacity:0}
+.notif-icon{font-size:18px;flex-shrink:0}
+.notif-body .nb-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.notif-body .nb-sub{font-size:12px;color:var(--color-text-secondary)}
+
+.decision-row{display:flex;gap:12px;flex-wrap:wrap}
+.dec-card{flex:1;min-width:140px;border-radius:10px;padding:1rem;animation:cardPop .4s ease forwards;opacity:0;position:relative;overflow:hidden}
+.dec-card .dc-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:.5rem}
+.dec-card .dc-title{font-size:14px;font-weight:500;margin-bottom:.35rem}
+.dec-card .dc-stat{font-size:22px;font-weight:500;margin-bottom:2px}
+.dec-card .dc-sub{font-size:11px}
+
+.btn-row{display:flex;gap:8px;margin-top:1rem}
+.nav-btn{font-size:13px;font-weight:500;padding:7px 18px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;transition:all .15s}
+.nav-btn:hover{background:var(--color-background-secondary)}
+.nav-btn.primary{background:#1A3C5E;color:#fff;border-color:#1A3C5E}
+.nav-btn.primary:hover{opacity:.9}
+
+/* Endpoint badge at bottom */
+.endpoint-strip{margin-top:1.25rem;padding:.75rem 1rem;border-radius:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ep-label{font-size:11px;color:var(--color-text-secondary);font-weight:500}
+.ep-tag{font-size:11px;padding:3px 9px;border-radius:5px;font-family:var(--font-mono);font-weight:500}
+
+/* Checkmark tick animation */
+@keyframes tickIn{from{stroke-dashoffset:30}to{stroke-dashoffset:0}}
+.tick{stroke-dasharray:30;stroke-dashoffset:30;animation:tickIn .5s ease .3s forwards}
+
+/* Debt bar animation */
+@keyframes shrink{from{width:100%}to{width:var(--to)}}
+.shrink-bar{animation:shrink 1.5s ease forwards}
+
+/* Confetti dots */
+.confetti-dot{position:absolute;border-radius:50%;animation:confettiFloat var(--dur) ease-in-out infinite}
+@keyframes confettiFloat{0%,100%{transform:translateY(0) rotate(0deg);opacity:.8}50%{transform:translateY(-20px) rotate(180deg);opacity:.4}}
+</style>
+
+<div class="shell">
+<div class="top-bar">
+  <div><h2>DebtFlow — Business flow</h2><p>What happens at each stage, from the user's perspective</p></div>
+</div>
+
+<!-- Step nodes -->
+<div class="track-wrap">
+<div class="track-label">User journey</div>
+<div class="steps-row" id="stepsRow">
+  <div class="step-node" onclick="go(0)"><div class="circle" id="c0">👤</div><div class="step-num">Sign up</div></div>
+  <div class="step-node" onclick="go(1)"><div class="circle" id="c1">🏦</div><div class="step-num">Add debts</div></div>
+  <div class="step-node" onclick="go(2)"><div class="circle" id="c2">🧮</div><div class="step-num">Get a plan</div></div>
+  <div class="step-node" onclick="go(3)"><div class="circle" id="c3">📅</div><div class="step-num">Schedule payments</div></div>
+  <div class="step-node" onclick="go(4)"><div class="circle" id="c4">📊</div><div class="step-num">Track progress</div></div>
+  <div class="step-node" onclick="go(5)"><div class="circle" id="c5">🔔</div><div class="step-num">Alerts &amp; offers</div></div>
+  <div class="step-node" onclick="go(6)"><div class="circle" id="c6">🎓</div><div class="step-num">Forgiveness check</div></div>
+  <div class="step-node" onclick="go(7)"><div class="circle" id="c7">🎉</div><div class="step-num">Debt free!</div></div>
+</div>
+
+<!-- Scene 0: Sign up -->
+<div class="scene">
+<div class="scene-inner" id="sc0">
+  <div class="scene-title">User creates an account</div>
+  <div class="scene-sub">A new user lands on DebtFlow, enters their name, email, and password. The platform creates their profile and sets their onboarding step to 0.</div>
+  <div class="flow-row">
+    <div class="flow-box" style="background:#EFF8FF;color:#1A3C5E;border:0.5px solid #B5D4F4;animation-delay:.05s">User enters name + email + password</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="background:#FEF5EC;color:#7C3A0A;border:0.5px solid #FAC775;animation-delay:.2s">Password hashed (bcrypt)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="background:#EAF3DE;color:#173404;border:0.5px solid #97C459;animation-delay:.35s">Account created ✓</div>
+  </div>
+  <div class="card-row">
+    <div class="mini-card" style="animation-delay:.1s"><div class="mc-label">What user sees</div><div class="mc-val">Welcome screen</div><div class="mc-sub">Onboarding wizard starts</div></div>
+    <div class="mini-card" style="animation-delay:.2s"><div class="mc-label">What platform does</div><div class="mc-val">Creates profile</div><div class="mc-sub">Stores in users table</div></div>
+    <div class="mini-card" style="animation-delay:.3s"><div class="mc-label">Session issued</div><div class="mc-val">JWT token</div><div class="mc-sub">Valid for 7 days</div></div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#FEF5EC;color:#7C3A0A">POST /auth/register</span>
+    <span class="ep-tag" style="background:#FEF5EC;color:#7C3A0A">POST /auth/login</span>
+  </div>
+</div>
+
+<!-- Scene 1: Add debts -->
+<div class="scene-inner" id="sc1">
+  <div class="scene-title">User connects their debts</div>
+  <div class="scene-sub">The user adds all their debts — student loans, credit cards, personal loans. They can connect via bank API or enter manually. The platform builds their debt picture.</div>
+  <div class="pill-group" id="debtPills">
+    <div class="tag" style="background:#EEEDFE;color:#26215C;border:0.5px solid #AFA9EC;animation-delay:.05s">🎓 Undergrad Student Loan — ₹18L @ 7.5%</div>
+    <div class="tag" style="background:#FAECE7;color:#4A1B0C;border:0.5px solid #F0997B;animation-delay:.15s">💳 Credit Card — ₹2.4L @ 36%</div>
+    <div class="tag" style="background:#E6F1FB;color:#042C53;border:0.5px solid #85B7EB;animation-delay:.25s">🏠 Personal Loan — ₹5L @ 14%</div>
+  </div>
+  <div class="card-row">
+    <div class="mini-card" style="animation-delay:.1s;border-left:3px solid #E24B4A"><div class="mc-label">Total debt</div><div class="mc-val" style="color:#E24B4A">₹25.4L</div><div class="mc-sub">across 3 accounts</div></div>
+    <div class="mini-card" style="animation-delay:.2s"><div class="mc-label">Highest rate</div><div class="mc-val">36%</div><div class="mc-sub">Credit card</div></div>
+    <div class="mini-card" style="animation-delay:.3s"><div class="mc-label">Min. monthly due</div><div class="mc-val">₹28,500</div><div class="mc-sub">across all accounts</div></div>
+    <div class="mini-card" style="animation-delay:.4s"><div class="mc-label">Sync status</div><div class="mc-val" style="color:#27AE60">Live ✓</div><div class="mc-sub">Auto-refreshed daily</div></div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#EFF8FF;color:#1A3C5E">POST /accounts</span>
+    <span class="ep-tag" style="background:#EFF8FF;color:#1A3C5E">GET /accounts</span>
+    <span class="ep-tag" style="background:#EFF8FF;color:#1A3C5E">POST /integrations/sync</span>
+  </div>
+</div>
+
+<!-- Scene 2: Get a plan -->
+<div class="scene-inner" id="sc2">
+  <div class="scene-title">Platform recommends a repayment plan</div>
+  <div class="scene-sub">DebtFlow calculates two strategies and shows the user exactly how much interest they'll save and when they'll be debt free. User picks one.</div>
+  <div class="decision-row">
+    <div class="dec-card" style="background:#EAF3DE;border:0.5px solid #97C459;animation-delay:.05s">
+      <div class="dc-badge" style="background:#C0DD97;color:#173404">Avalanche method</div>
+      <div class="dc-title" style="color:#173404">Highest interest first</div>
+      <div class="dc-stat" style="color:#27AE60">₹3.2L saved</div>
+      <div class="dc-sub" style="color:#3B6D11">Debt free in 38 months</div>
+    </div>
+    <div class="dec-card" style="background:#EEEDFE;border:1.5px solid #7F77DD;animation-delay:.15s">
+      <div class="dc-badge" style="background:#AFA9EC;color:#26215C">Snowball method ★ Recommended</div>
+      <div class="dc-title" style="color:#26215C">Smallest balance first</div>
+      <div class="dc-stat" style="color:#534AB7">₹2.1L saved</div>
+      <div class="dc-sub" style="color:#534AB7">Debt free in 41 months · better motivation</div>
+    </div>
+    <div class="dec-card" style="background:#FEF5EC;border:0.5px solid #FAC775;animation-delay:.25s">
+      <div class="dc-badge" style="background:#FAC775;color:#7C3A0A">Custom plan</div>
+      <div class="dc-title" style="color:#7C3A0A">You set the priority</div>
+      <div class="dc-stat" style="color:#E67E22">Flexible</div>
+      <div class="dc-sub" style="color:#BA7517">Drag to re-order accounts</div>
+    </div>
+  </div>
+  <div style="margin-top:.75rem;padding:.625rem 1rem;border-radius:8px;background:var(--color-background-secondary);font-size:12px;color:var(--color-text-secondary);animation:cardPop .4s ease .3s forwards;opacity:0">
+    💡 User also sets their <strong style="color:var(--color-text-primary)">monthly budget</strong> — how much they can afford to put toward debt each month beyond the minimums.
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#EEEDFE;color:#26215C">POST /strategies/calculate</span>
+    <span class="ep-tag" style="background:#EEEDFE;color:#26215C">POST /strategies</span>
+    <span class="ep-tag" style="background:#EEEDFE;color:#26215C">PUT /strategies/:id/activate</span>
+  </div>
+</div>
+
+<!-- Scene 3: Payment schedule -->
+<div class="scene-inner" id="sc3">
+  <div class="scene-title">Platform builds the payment schedule</div>
+  <div class="scene-sub">Once the strategy is chosen, DebtFlow generates a month-by-month payment schedule. The user sees exactly what to pay to which account on which date.</div>
+  <div class="card-row">
+    <div class="mini-card" style="animation-delay:.05s;border-left:3px solid #E24B4A"><div class="mc-label">Credit Card · 15th</div><div class="mc-val" style="color:#E24B4A">₹12,000</div><div class="mc-sub">Min ₹2,400 + extra ₹9,600</div></div>
+    <div class="mini-card" style="animation-delay:.15s;border-left:3px solid #2E86AB"><div class="mc-label">Personal Loan · 5th</div><div class="mc-val" style="color:#2E86AB">₹7,500</div><div class="mc-sub">Minimum only this month</div></div>
+    <div class="mini-card" style="animation-delay:.25s;border-left:3px solid #8E44AD"><div class="mc-label">Student Loan · 20th</div><div class="mc-val" style="color:#8E44AD">₹9,000</div><div class="mc-sub">Minimum only this month</div></div>
+  </div>
+  <div style="margin:.75rem 0;animation:cardPop .4s ease .2s forwards;opacity:0">
+    <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:.5rem">Monthly budget used</div>
+    <div class="prog-track" style="height:12px;border-radius:6px">
+      <div class="prog-fill shrink-bar" style="background:linear-gradient(90deg,#27AE60,#2E86AB);--to:93%;width:0%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--color-text-secondary)"><span>₹28,500 of ₹30,000</span><span style="color:#27AE60">93% allocated</span></div>
+  </div>
+  <div class="notif-list" style="margin-top:.5rem">
+    <div class="notif-item" style="animation-delay:.1s"><div class="notif-icon">✅</div><div class="notif-body"><div class="nb-title">Autopay enabled</div><div class="nb-sub">Payments will go out automatically on scheduled dates</div></div></div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#E1F5EE;color:#04342C">POST /payments/schedule</span>
+    <span class="ep-tag" style="background:#E1F5EE;color:#04342C">GET /payments/upcoming</span>
+  </div>
+</div>
+
+<!-- Scene 4: Track progress -->
+<div class="scene-inner" id="sc4">
+  <div class="scene-title">User watches debt melt away on the dashboard</div>
+  <div class="scene-sub">Every payment is recorded. The dashboard updates in real time showing balance reductions, interest saved so far, and the projected debt-free date getting closer.</div>
+  <div class="progress-section" style="animation:cardPop .4s ease .1s forwards;opacity:0">
+    <div class="prog-row"><span class="prog-label">Credit card</span><div class="prog-track"><div class="prog-fill" style="background:#E24B4A;--to:72%;width:0%"></div></div><span class="prog-pct" style="color:#E24B4A">72%</span></div>
+    <div class="prog-row"><span class="prog-label">Personal loan</span><div class="prog-track"><div class="prog-fill" style="background:#2E86AB;--to:38%;width:0%"></div></div><span class="prog-pct" style="color:#2E86AB">38%</span></div>
+    <div class="prog-row"><span class="prog-label">Student loan</span><div class="prog-track"><div class="prog-fill" style="background:#8E44AD;--to:19%;width:0%"></div></div><span class="prog-pct" style="color:#8E44AD">19%</span></div>
+  </div>
+  <div class="card-row">
+    <div class="mini-card" style="animation-delay:.15s"><div class="mc-label">Interest saved so far</div><div class="mc-val" style="color:#27AE60">₹48,200</div><div class="mc-sub">vs. minimum payments</div></div>
+    <div class="mini-card" style="animation-delay:.25s"><div class="mc-label">Months ahead of schedule</div><div class="mc-val">+3</div><div class="mc-sub">Due to extra payments</div></div>
+    <div class="mini-card" style="animation-delay:.35s"><div class="mc-label">Debt-free date</div><div class="mc-val">Jun 2028</div><div class="mc-sub">Originally Sep 2028</div></div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#E6F1FB;color:#042C53">GET /analytics/progress</span>
+    <span class="ep-tag" style="background:#E6F1FB;color:#042C53">GET /analytics/interest-saved</span>
+    <span class="ep-tag" style="background:#E6F1FB;color:#042C53">GET /payments/history</span>
+  </div>
+</div>
+
+<!-- Scene 5: Alerts & Offers -->
+<div class="scene-inner" id="sc5">
+  <div class="scene-title">Platform proactively alerts the user</div>
+  <div class="scene-sub">DebtFlow watches the market and the user's financial situation. It sends timely alerts — rate drops, refinancing opportunities, milestone celebrations, and upcoming payments.</div>
+  <div class="notif-list">
+    <div class="notif-item" style="animation-delay:.05s;border-left:3px solid #E67E22"><div class="notif-icon">📉</div><div class="notif-body"><div class="nb-title">Rate drop alert</div><div class="nb-sub">Axis Bank is offering 10.5% on personal loans — could save you ₹22,000</div></div></div>
+    <div class="notif-item" style="animation-delay:.15s;border-left:3px solid #27AE60"><div class="notif-icon">🏆</div><div class="notif-body"><div class="nb-title">Milestone reached!</div><div class="nb-sub">You've paid off 50% of your credit card balance — great work!</div></div></div>
+    <div class="notif-item" style="animation-delay:.25s;border-left:3px solid #2E86AB"><div class="notif-icon">📅</div><div class="notif-body"><div class="nb-title">Payment reminder</div><div class="nb-sub">Credit card payment of ₹12,000 is due in 3 days (15th Feb)</div></div></div>
+    <div class="notif-item" style="animation-delay:.35s;border-left:3px solid #8E44AD"><div class="notif-icon">💰</div><div class="notif-body"><div class="nb-title">Refinancing offer</div><div class="nb-sub">HDFC Bank pre-approved you at 9.8% fixed — 18 months shorter term</div></div></div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#FEF5EC;color:#7C3A0A">GET /notifications</span>
+    <span class="ep-tag" style="background:#FEF5EC;color:#7C3A0A">GET /refinancing/offers</span>
+    <span class="ep-tag" style="background:#FEF5EC;color:#7C3A0A">POST /notifications/read</span>
+  </div>
+</div>
+
+<!-- Scene 6: Forgiveness -->
+<div class="scene-inner" id="sc6">
+  <div class="scene-title">Platform checks government forgiveness eligibility</div>
+  <div class="scene-sub">For users with government-backed student loans, DebtFlow checks whether they qualify for loan forgiveness programs — PSLF, IDR, and others — and tracks their progress automatically.</div>
+  <div class="decision-row">
+    <div class="dec-card" style="background:#EAF3DE;border:0.5px solid #97C459;animation-delay:.05s">
+      <div class="dc-badge" style="background:#C0DD97;color:#173404">PSLF — Eligible ✓</div>
+      <div class="dc-title" style="color:#173404">Public Service Loan Forgiveness</div>
+      <div class="dc-stat" style="color:#27AE60">84 / 120</div>
+      <div class="dc-sub" style="color:#3B6D11">qualifying payments made · 36 to go</div>
+    </div>
+    <div class="dec-card" style="background:#FCEBEB;border:0.5px solid #F09595;animation-delay:.15s">
+      <div class="dc-badge" style="background:#F7C1C1;color:#501313">IDR 20yr — Not yet</div>
+      <div class="dc-title" style="color:#501313">Income-Driven Repayment</div>
+      <div class="dc-stat" style="color:#E24B4A">8 / 240</div>
+      <div class="dc-sub" style="color:#A32D2D">payments made · too early to apply</div>
+    </div>
+  </div>
+  <div class="notif-item" style="animation-delay:.3s;margin-top:.75rem;border-left:3px solid #27AE60"><div class="notif-icon">📋</div><div class="notif-body"><div class="nb-title">Employer certification due</div><div class="nb-sub">Submit Employment Certification Form to your HR by March 31 to keep PSLF progress on track</div></div></div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">GET /forgiveness/eligibility</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">GET /forgiveness/tracking</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">POST /forgiveness/tracking/update</span>
+  </div>
+</div>
+
+<!-- Scene 7: Debt Free! -->
+<div class="scene-inner" id="sc7">
+  <div style="position:relative">
+    <div class="confetti-dot" style="width:10px;height:10px;background:#E67E22;top:10px;left:20%;--dur:2.1s"></div>
+    <div class="confetti-dot" style="width:8px;height:8px;background:#27AE60;top:5px;left:50%;--dur:1.7s"></div>
+    <div class="confetti-dot" style="width:12px;height:12px;background:#2E86AB;top:15px;left:75%;--dur:2.4s"></div>
+    <div class="confetti-dot" style="width:7px;height:7px;background:#8E44AD;top:8px;left:35%;--dur:1.9s"></div>
+    <div class="confetti-dot" style="width:9px;height:9px;background:#E24B4A;top:20px;left:60%;--dur:2.2s"></div>
+  </div>
+  <div style="text-align:center;padding:1rem 0;animation:cardPop .5s ease forwards;opacity:0">
+    <div style="font-size:48px;margin-bottom:.5rem">🎉</div>
+    <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Debt free!</div>
+    <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;max-width:400px;margin:0 auto">The user has paid off every account. DebtFlow celebrates the milestone, shows the full journey summary, and redirects toward investment and savings goals.</div>
+  </div>
+  <div class="card-row" style="margin-top:1rem">
+    <div class="mini-card" style="animation-delay:.15s;text-align:center"><div class="mc-label">Total paid off</div><div class="mc-val" style="color:#27AE60">₹25.4L</div></div>
+    <div class="mini-card" style="animation-delay:.25s;text-align:center"><div class="mc-label">Interest saved vs. minimums</div><div class="mc-val" style="color:#2E86AB">₹3.2L</div></div>
+    <div class="mini-card" style="animation-delay:.35s;text-align:center"><div class="mc-label">Time taken</div><div class="mc-val">38 months</div></div>
+    <div class="mini-card" style="animation-delay:.45s;text-align:center"><div class="mc-label">Months saved</div><div class="mc-val" style="color:#27AE60">+5</div><div class="mc-sub">vs. original plan</div></div>
+  </div>
+  <div class="notif-item" style="animation-delay:.5s;margin-top:.5rem;background:var(--color-background-secondary);border-color:var(--color-border-tertiary)">
+    <div class="notif-icon">🚀</div>
+    <div class="notif-body">
+      <div class="nb-title">What's next?</div>
+      <div class="nb-sub">Platform now suggests switching focus to emergency fund → then investments. Same budget, new goal.</div>
+    </div>
+  </div>
+  <div class="endpoint-strip">
+    <span class="ep-label">API endpoints triggered →</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">POST /analytics/milestone</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">PUT /accounts/:id (is_active=false)</span>
+    <span class="ep-tag" style="background:#EAF3DE;color:#173404">POST /goals (new savings goal)</span>
+  </div>
+</div>
+
+</div><!-- /scene -->
+
+<!-- Nav buttons -->
+<div class="btn-row" style="padding:0 0">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">← Back</button>
+  <button class="nav-btn primary" id="nextBtn" onclick="next()">Next →</button>
+  <div style="flex:1"></div>
+  <span id="stepCounter" style="font-size:12px;color:var(--color-text-secondary);align-self:center">Step 1 of 8</span>
+</div>
+
+</div><!-- /track-wrap -->
+</div><!-- /shell -->
+
+<script>
+let cur=0;
+const total=8;
+const icons=['👤','🏦','🧮','📅','📊','🔔','🎓','🎉'];
+
+function go(n){
+  const prev_=cur;
+  cur=n;
+  document.querySelectorAll('.scene-inner').forEach((s,i)=>{
+    s.classList.toggle('visible',i===cur);
+    if(i===cur){
+      s.querySelectorAll('.prog-fill').forEach(p=>{
+        const to=p.style.getPropertyValue('--to')||p.getAttribute('data-to');
+        if(to){setTimeout(()=>{p.style.width=to},100)}
+      });
+    }
+  });
+  document.querySelectorAll('.step-node').forEach((nd,i)=>{
+    nd.classList.toggle('done',i<cur);
+    nd.classList.toggle('active',i===cur);
+    document.getElementById('c'+i).textContent=i<cur?'✓':icons[i];
+  });
+  document.getElementById('stepCounter').textContent='Step '+(cur+1)+' of '+total;
+  document.getElementById('prevBtn').style.opacity=cur===0?'.4':'1';
+  document.getElementById('prevBtn').style.pointerEvents=cur===0?'none':'auto';
+  document.getElementById('nextBtn').textContent=cur===total-1?'Restart ↺':'Next →';
+}
+
+function next(){cur===total-1?go(0):go(cur+1)}
+function prev(){if(cur>0)go(cur-1)}
+
+go(0);
+</script>
