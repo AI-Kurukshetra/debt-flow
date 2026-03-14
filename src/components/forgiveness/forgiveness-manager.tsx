@@ -59,7 +59,7 @@ export function ForgivenessManager({ programs, initialTracking }: ForgivenessMan
           current={pslfTracking?.qualifying_payments || 0}
           total={120}
           label="PSLF Progress"
-          subLabel="Public Service Loan Forgiveness (84 of 120 payments verified)"
+          subLabel={`Public Service Loan Forgiveness (${pslfTracking?.qualifying_payments || 0} of 120 payments verified)`}
         />
       </div>
 

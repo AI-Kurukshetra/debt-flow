@@ -4,21 +4,16 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 
+const MOCK_STATS = {
+  totalPaid: 42150,
+  interestSaved: 5230,
+  monthsTaken: 34
+};
+
 export default function DebtFreeCelebrationPage() {
-  const [stats, setStats] = useState({
-    totalPaid: 0,
-    interestSaved: 0,
-    monthsTaken: 0
-  });
+  const [stats] = useState(MOCK_STATS);
 
   useEffect(() => {
-    // Mock data for celebration
-    setStats({
-      totalPaid: 42150,
-      interestSaved: 5230,
-      monthsTaken: 34
-    });
-    
     // In a real app, we'd trigger a milestone update here
     fetch("/api/analytics/milestone", {
       method: "POST",
@@ -53,7 +48,7 @@ export default function DebtFreeCelebrationPage() {
         </div>
 
         <div className={styles.actions}>
-          <h3>What's next?</h3>
+          <h3>What&apos;s next?</h3>
           <p>Put your extra cash to work by setting a new financial goal.</p>
           <div className={styles.buttonRow}>
             <Link href="/dashboard/goals" className={styles.primaryButton}>

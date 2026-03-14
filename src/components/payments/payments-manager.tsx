@@ -21,15 +21,15 @@ interface PaymentHistory {
 }
 
 interface PaymentsManagerProps {
-  initialUpcoming: any[];
-  initialHistory: any[];
+  initialUpcoming: UpcomingPayment[];
+  initialHistory: PaymentHistory[];
 }
 
 export function PaymentsManager({ initialUpcoming, initialHistory }: PaymentsManagerProps) {
   const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
 
-  const upcoming = initialUpcoming as UpcomingPayment[];
-  const history = initialHistory as PaymentHistory[];
+  const upcoming = initialUpcoming;
+  const history = initialHistory;
 
   return (
     <div className={styles.container}>

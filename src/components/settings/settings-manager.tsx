@@ -31,7 +31,7 @@ export function SettingsManager({ initialProfile }: { initialProfile: Profile | 
       if (res.ok) {
         setMessage("Profile updated successfully!");
       }
-    } catch (err) {
+    } catch {
       setMessage("Failed to update profile.");
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ export function SettingsManager({ initialProfile }: { initialProfile: Profile | 
     try {
       await fetch("/api/auth/signout", { method: "POST" });
       router.push("/login");
-    } catch (err) {
+    } catch {
       console.error("Sign out failed");
     }
   };

@@ -3,7 +3,7 @@
 import React from "react";
 import styles from "./EcfTable.module.css";
 
-interface EcfRecord {
+export interface EcfRecord {
   id: string;
   employer_name: string;
   employment_period: string;

@@ -16,7 +16,7 @@ interface Offer {
 }
 
 interface RefinancingManagerProps {
-  initialOffers: any[];
+  initialOffers: Offer[];
   currentSummary: { totalDebt: number; weightedRate: number };
 }
 
