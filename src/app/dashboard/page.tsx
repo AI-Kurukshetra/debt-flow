@@ -67,7 +67,7 @@ export default async function DashboardPage() {
             </button>
           </form>
         ) : (
-          <Link href="/" className={styles.signInLink}>
+          <Link href="/login" className={styles.signInLink}>
             Sign In
           </Link>
         )}
@@ -132,8 +132,8 @@ export default async function DashboardPage() {
             ? "Use this workspace as the foundation for payoff strategies, loan tracking, and repayment insights."
             : "Use this demo view for sharing, then sign in to unlock a personal DebtFlow workspace."}
         </p>
-        <Link href="/" className={styles.link}>
-          Return to home
+        <Link href="/login" className={styles.link}>
+          Go to login
         </Link>
       </section>
     </main>
@@ -145,7 +145,7 @@ function createDemoReadClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceRoleKey) {
-    redirect("/?needSignIn=1");
+    redirect("/login?needSignIn=1");
   }
 
   return createClient<Database>(url, serviceRoleKey, {

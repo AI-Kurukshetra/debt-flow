@@ -1,8 +1,21 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import PasswordAuthForm from "@/components/auth/password-auth-form";
+import { getCurrentCustomUser } from "@/lib/auth/custom";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import styles from "../page.module.css";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const customUser = await getCurrentCustomUser();
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (customUser || user) {
+    redirect("/dashboard");
+  }
+
   return (
     <main className={styles.page}>
       <section className={styles.heroPanel}>

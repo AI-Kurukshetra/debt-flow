@@ -5,6 +5,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORT=3000
 NEXT_URL="http://127.0.0.1:${PORT}"
+APP_PATH="/login"
+APP_URL="${NEXT_URL}${APP_PATH}"
 NEXT_LOG="$(mktemp)"
 TUNNEL_LOG="$(mktemp)"
 NEXT_PID=""
@@ -92,8 +94,8 @@ start_next() {
 wait_for_next() {
   echo "Waiting for local server..."
   for _ in $(seq 1 90); do
-    if curl -fsS "${NEXT_URL}" >/dev/null 2>&1; then
-      echo "Local server ready at ${NEXT_URL}"
+    if curl -fsS "${APP_URL}" >/dev/null 2>&1; then
+      echo "Local server ready at ${APP_URL}"
       return
     fi
 
@@ -128,9 +130,10 @@ wait_for_tunnel_url() {
 
     url="$(grep -Eo 'https://[-a-z0-9]+\.trycloudflare\.com' "${TUNNEL_LOG}" | head -n 1 || true)"
     if [[ -n "${url}" ]]; then
+      app_public_url="${url}${APP_PATH}"
       echo
-      echo "Public URL: ${url}"
-      echo "Local URL:  ${NEXT_URL}"
+      echo "Public URL: ${app_public_url}"
+      echo "Local URL:  ${APP_URL}"
       echo
       return
     fi
