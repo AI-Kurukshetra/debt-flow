@@ -44,7 +44,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className={styles.statLabel}>Sign in with</p>
           <strong className={styles.authHeading}>Username or email</strong>
           <p className={styles.subtle}>
-            Your Supabase-connected backend keeps account data, sessions, and future repayment workflows in one place.
+            Your account, balances, and repayment progress are securely stored and always up to date.
           </p>
         </section>
       </section>
