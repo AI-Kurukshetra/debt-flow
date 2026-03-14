@@ -7,12 +7,173 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headerRight {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
 }
 
 .header h1 {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
+}
+
+.nameButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+}
+
+.nameButton:hover .editIcon {
+  opacity: 1;
+}
+
+.nameInput {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--foreground);
+  padding: 4px 10px;
+  outline: none;
+  width: 280px;
+}
+
+.editIcon {
+  font-size: 0.9rem;
+  color: var(--muted);
+  opacity: 0.5;
+  transition: opacity 150ms ease;
+}
+
+.deleteButton {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.deleteButton:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.budgetDisplay {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  transition: border-color 200ms ease;
+}
+
+.budgetDisplay:hover {
+  border-color: var(--accent);
+}
+
+.budgetDisplay:hover .editIcon {
+  opacity: 1;
+}
+
+/* Setup dialog */
+.dialog {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+}
+
+.dialog h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.dialogField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialogField label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dialogInput {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--foreground);
+  font-size: 1rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.dialogInput:focus {
+  border-color: var(--accent);
+}
+
+.dialogActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.secondaryButton {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: border-color 200ms ease;
+}
+
+.secondaryButton:hover {
+  border-color: var(--foreground);
 }
 
 .budgetControl {
@@ -70,23 +231,78 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 64px 32px;
+  text-align: center;
+}
+
+.emptyState h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.emptyState p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 400px;
+}
+
+.primaryButton {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 200ms ease, opacity 200ms ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
   }
-  
+
+  .headerRight {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
   .budgetControl {
     align-items: flex-start;
     width: 100%;
   }
-  
+
   .inputWrapper {
     width: 100%;
   }
-  
+
   .inputWrapper input {
     flex: 1;
+  }
+
+  .emptyState {
+    padding: 48px 24px;
   }
 }

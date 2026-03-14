@@ -10,10 +10,24 @@ interface TransactionFormProps {
   onCancel: () => void;
 }
 
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: "housing", category_name: "Housing", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "food", category_name: "Food & Dining", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "transport", category_name: "Transportation", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "utilities", category_name: "Utilities", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "healthcare", category_name: "Healthcare", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "debt_payment", category_name: "Debt Payment", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "entertainment", category_name: "Entertainment", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "savings", category_name: "Savings", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+  { id: "income", category_name: "Income", category_type: "income", budgeted_amount: 0, actual_amount: 0 },
+  { id: "other", category_name: "Other", category_type: "expense", budgeted_amount: 0, actual_amount: 0 },
+];
+
 export function TransactionForm({ categories, onSubmit, onCancel }: TransactionFormProps) {
+  const activeCategories = categories.length > 0 ? categories : DEFAULT_CATEGORIES;
   const [formData, setFormData] = useState({
     amount: "",
-    category_id: categories[0]?.id || "",
+    category_id: activeCategories[0]?.id || "",
     transaction_date: new Date().toISOString().split('T')[0],
     notes: "",
     transaction_type: "payment",
@@ -50,7 +64,7 @@ export function TransactionForm({ categories, onSubmit, onCancel }: TransactionF
           className={styles.select}
           required
         >
-          {categories.map((cat) => (
+          {activeCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.category_name}
             </option>
