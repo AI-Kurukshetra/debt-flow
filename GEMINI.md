@@ -51,21 +51,21 @@ DebtFlow is an AI-powered debt optimization and financial freedom platform. It h
 
 ## Development Roadmap (✅ Core Complete)
 
-The initial implementation plan (`docs/PLAN_CC.md`) is successfully completed:
+The initial implementation plan (`docs/PLAN_CC.md`) and gap resolution plans are successfully completed:
 
 1. **Phase 0: Auth & Schema (✅ Complete)** - Custom auth, profiles, and core migrations.
 2. **Phase 1-2: Foundation & Profile (✅ Complete)** - Chart library (Recharts), auth middleware, and profile triggers.
-3. **Phase 3: Tiered API Routes (✅ Complete)** - 20+ API routes for all core entities.
+3. **Phase 3: Tiered API Routes (✅ Complete)** - 20+ API routes for all core entities including `budget-transactions`.
 4. **Phase 4: Dashboard Rewrite (✅ Complete)** - High-fidelity overview with real/demo data modes.
-5. **Phase 5: Frontend Modules (✅ Complete)** - Onboarding, Strategies (DND), Budgeting, Forgiveness, and Payments.
-6. **Phase 6: Polish (✅ Complete)** - Toasts, mobile navigation, loading skeletons, and error boundaries.
+5. **Phase 5: Frontend Modules (✅ Complete)** - Onboarding, StrategyManager (Editable Setups & Custom DND), Budgeting (Transactions API & UI), Forgiveness (PSLF/ECF trackers), and Payments (New Modal & History split).
+6. **Phase 6: Polish (✅ Complete)** - Toasts, mobile navigation (with Logout), loading skeletons, and error boundaries.
 
 ### Next Steps: Advanced Roadmap (`docs/PLAN_ADVANCED.md`)
 
 1. **Phase 7: Production Readiness** - Security audit, RLS verification, and data validation.
-2. **Phase 8: Automation & Notifications** - Cron-based reminders and rate drop monitoring.
+2. **Phase 8: Automation & Notifications (🚧 In Progress)** - Infrastructure partially complete (API routes for `notifications` and `refinancing/rate-drop` exist).
 3. **Phase 9: Plaid Integration** - Automated bank sync and transaction matching.
-4. **Phase 10: AI Payoff Optimizer** - Advanced algorithmic payment splitting and natural language insights.
+4. **Phase 10: AI Payoff Optimizer (🚧 In Progress)** - Mathematical foundation partially complete (`api/strategies/calculate` handles payoff simulations).
 
 ## Development Conventions
 
